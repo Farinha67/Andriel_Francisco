@@ -60,4 +60,4 @@ public class PickupItem : MonoBehaviour
 
         heldItem = null;
     }
-}
+}   

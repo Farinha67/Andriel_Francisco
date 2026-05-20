@@ -21,6 +21,11 @@ public class BoxCounter : MonoBehaviour
             currentBoxes = maxBoxes;
 
         UpdateText();
+
+        if (currentBoxes == maxBoxes)
+        {
+            Debug.Log("MISSÃO COMPLETA!");
+        }
     }
 
     void UpdateText()

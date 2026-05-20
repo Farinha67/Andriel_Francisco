@@ -344,7 +344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d426dad078f32540a1b23dae94c5f45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseLook
-  mouseSensitivity: 300
+  mouseSensitivity: 200
   playerBody: {fileID: 529974074}
 --- !u!114 &87640126
 MonoBehaviour:
@@ -665,10 +665,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 7016020133083651673, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1161270704}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
       insertIndex: -1
@@ -676,9 +673,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1493120760}
-    - targetCorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1493120762}
   m_SourcePrefab: {fileID: 100100000, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
 --- !u!1 &475171473
 GameObject:
@@ -841,7 +835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f181ef4577e785b418116d64a938a041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  speed: 8
+  speed: 15
   gravity: -9.81
 --- !u!143 &529974076
 CharacterController:
@@ -5989,12 +5983,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1161270703}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.44683716, z: 0, w: 0.89461535}
-  m_LocalPosition: {x: 0.029585967, y: 0.87141687, z: -2.40805}
-  m_LocalScale: {x: 0.8190008, y: 0.8190008, z: 0.8190008}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 24.127, y: 1.114, z: 206.225}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1493120761}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1294452143
 GameObject:
@@ -6375,8 +6369,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.224058, y: 1.4977803, z: 1.5509294}
-  m_Center: {x: -0.027058633, y: 0.24889094, z: -1.7984757}
+  m_Size: {x: 1.9311777, y: 1.929191, z: 4.476764}
+  m_Center: {x: -0.019681249, y: 0.4645963, z: -0.045762703}
 --- !u!114 &1493120760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6389,33 +6383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bfe82c23a051847b7cfca9f0ad54da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarDropZone
-  boxCounter: {fileID: 1294452144}
---- !u!4 &1493120761 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7016020133083651673, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
-  m_PrefabInstance: {fileID: 232717270}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1493120762
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1493120757}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.9311781, y: 1.929191, z: 4.5591097}
-  m_Center: {x: -0.01968125, y: 0.4645963, z: 0.03297323}
+  dropPoint: {fileID: 1813517563}
 --- !u!1 &1556127044
 GameObject:
   m_ObjectHideFlags: 0
@@ -7137,6 +7105,7 @@ SceneRoots:
   - {fileID: 1127268051}
   - {fileID: 1090340679}
   - {fileID: 1813517563}
+  - {fileID: 1161270704}
   - {fileID: 232717270}
   - {fileID: 1306084011}
   - {fileID: 1410922535}

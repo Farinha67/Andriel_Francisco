@@ -8,17 +8,27 @@ public class CarController : MonoBehaviour
     public float velocidade = 15f;
     public float velocidadeRotacao = 100f;
 
+    [Header("Câmera")]
+    public Camera cameraCarro;
+
+    [Header("Saída do carro")]
+    public Transform exitPoint;
+
     [Header("Som")]
     public AudioSource audioMotor;
 
+    [Header("Reset")]
+    [SerializeField] private float tempoParaResetar = 25f;
+
     private Rigidbody rb;
+
     private float movimento;
     private float direcao;
 
-    [Header("Reset")]
-    [SerializeField]private float tempoParaResetar = 25f;
-
     private float tempoParado;
+
+    private bool estaDirigindo = false;
+
 
     void Start()
     {
@@ -29,14 +39,54 @@ public class CarController : MonoBehaviour
             audioMotor.loop = true;
             audioMotor.Stop();
         }
+
+        // O jogador começa FORA do carro
+        DesativarModoDirigir();
     }
+
 
     void Update()
     {
+        // =====================================================
+        // SAIR DO CARRO
+        // =====================================================
+
+        // IMPORTANTE:
+        // Essa verificação fica ANTES do "return".
+        if (estaDirigindo && Input.GetKeyDown(KeyCode.F))
+        {
+            PlayerVehicleInteraction player =
+                FindFirstObjectByType<PlayerVehicleInteraction>();
+
+            if (player != null)
+            {
+                player.SairDoCarro();
+            }
+
+            return;
+        }
+
+
+        // Se não estiver dirigindo, não executa o resto
+        if (!estaDirigindo)
+            return;
+
+
+        // =====================================================
+        // MOVIMENTO
+        // =====================================================
+
         movimento = Input.GetAxis("Vertical");
         direcao = Input.GetAxis("Horizontal");
 
-        bool estaMovendo = Mathf.Abs(movimento) > 0.1f || Mathf.Abs(direcao) > 0.1f;
+
+        // =====================================================
+        // SOM DO MOTOR
+        // =====================================================
+
+        bool estaMovendo =
+            Mathf.Abs(movimento) > 0.1f ||
+            Mathf.Abs(direcao) > 0.1f;
 
         if (audioMotor != null)
         {
@@ -53,33 +103,104 @@ public class CarController : MonoBehaviour
         }
 
 
+        // =====================================================
+        // RESET SE FICAR PARADO
+        // =====================================================
+
         if (rb.linearVelocity.magnitude < 0.2f)
         {
             tempoParado += Time.deltaTime;
 
             if (tempoParado >= tempoParaResetar)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(
+                    SceneManager.GetActiveScene().buildIndex
+                );
             }
         }
         else
         {
             tempoParado = 0f;
         }
-        if (Vector3.Dot(transform.up, Vector3.down) > 0.7f)
-        {
-            tempoParado += Time.deltaTime;
-        }
     }
+
 
     void FixedUpdate()
     {
-        Vector3 frente = transform.forward * movimento * velocidade * Time.fixedDeltaTime;
+        if (!estaDirigindo)
+            return;
+
+
+        // Movimento para frente/trás
+        Vector3 frente =
+            transform.forward *
+            movimento *
+            velocidade *
+            Time.fixedDeltaTime;
+
         rb.MovePosition(rb.position + frente);
 
-        float rotacao = direcao * velocidadeRotacao * Time.fixedDeltaTime;
-        Quaternion giro = Quaternion.Euler(0, rotacao, 0);
+
+        // Rotação
+        float rotacao =
+            direcao *
+            velocidadeRotacao *
+            Time.fixedDeltaTime;
+
+        Quaternion giro =
+            Quaternion.Euler(0, rotacao, 0);
 
         rb.MoveRotation(rb.rotation * giro);
+    }
+
+
+    // =========================================================
+    // ENTRAR NO CARRO
+    // =========================================================
+
+    public void AtivarModoDirigir()
+    {
+        estaDirigindo = true;
+
+        if (cameraCarro != null)
+        {
+            cameraCarro.enabled = true;
+
+            AudioListener listener =
+                cameraCarro.GetComponent<AudioListener>();
+
+            if (listener != null)
+                listener.enabled = true;
+        }
+
+        Debug.Log("Modo dirigir ATIVADO");
+    }
+
+
+    // =========================================================
+    // SAIR / DESATIVAR CARRO
+    // =========================================================
+
+    public void DesativarModoDirigir()
+    {
+        estaDirigindo = false;
+
+        if (cameraCarro != null)
+        {
+            AudioListener listener =
+                cameraCarro.GetComponent<AudioListener>();
+
+            if (listener != null)
+                listener.enabled = false;
+
+            cameraCarro.enabled = false;
+        }
+
+        if (audioMotor != null && audioMotor.isPlaying)
+        {
+            audioMotor.Stop();
+        }
+
+        Debug.Log("Modo dirigir DESATIVADO");
     }
 }

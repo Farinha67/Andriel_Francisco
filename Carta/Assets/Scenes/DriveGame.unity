@@ -145,7 +145,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2792218741957914664, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.93
+      value: 33.82
       objectReference: {fileID: 0}
     - target: {fileID: 2792218741957914664, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -153,7 +153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2792218741957914664, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 472.47
+      value: 470.59
       objectReference: {fileID: 0}
     - target: {fileID: 2792218741957914664, guid: 133308cdb8794744caaef026bde9e1f0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -456,6 +456,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarController
   velocidade: 15
   velocidadeRotacao: 100
+  cameraCarro: {fileID: 0}
+  exitPoint: {fileID: 0}
   audioMotor: {fileID: 1192226469}
   tempoParaResetar: 25
 --- !u!4 &1192226472 stripped

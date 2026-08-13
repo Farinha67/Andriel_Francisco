@@ -13,6 +13,9 @@ public class PlayerVehicleInteraction : MonoBehaviour
     [Header("Movimento do Player")]
     public MonoBehaviour playerMovement;
 
+    [Header("Interface")]
+    public GameObject interactionF;
+
     private AudioListener playerAudioListener;
 
     // Carro que o jogador está usando
@@ -31,29 +34,54 @@ public class PlayerVehicleInteraction : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetKeyDown(teclaInteracao))
-            return;
-
-
-        // =====================================================
-        // SE ESTIVER DENTRO DO CARRO
-        // =====================================================
-
-        if (carroAtual != null)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            SairDoCarro();
-            return;
+            if (carroAtual != null)
+            {
+                SairDoCarro();
+            }
+            else
+            {
+                ProcurarCarro();
+            }
         }
 
-
-        // =====================================================
-        // SE ESTIVER FORA DO CARRO
-        // =====================================================
-
-        ProcurarCarro();
+        VerificarInteração();
     }
+    void VerificarInteração()
+    {
+        if (playerCamera == null || interactionF == null)
+            return;
 
+        Ray ray = new Ray(
+            playerCamera.transform.position,
+            playerCamera.transform.forward
+        );
 
+        RaycastHit hit;
+
+        if (Physics.Raycast(
+            ray,
+            out hit,
+            distanciaInteracao))
+        {
+            CarController carro =
+                hit.collider.GetComponentInParent<CarController>();
+
+            if (carro != null)
+            {
+                if (carro.EstaDirigindo)
+                {
+                    interactionF.SetActive(false);
+                    return;
+                }
+                interactionF.SetActive(true);
+                return;
+            }
+        }
+
+        interactionF.SetActive(false);
+    }
     void ProcurarCarro()
     {
         if (playerCamera == null)

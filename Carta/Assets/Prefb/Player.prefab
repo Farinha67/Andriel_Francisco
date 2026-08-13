@@ -215,6 +215,8 @@ GameObject:
   - component: {fileID: 2622205610619270582}
   - component: {fileID: 7995553642024831488}
   - component: {fileID: 7831884963363814148}
+  - component: {fileID: 3529821004786960554}
+  - component: {fileID: 2162577404004913432}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -230,9 +232,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7107137739920480307}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.42302367, z: -0, w: 0.90611863}
+  m_LocalRotation: {x: 0, y: -0.4230216, z: 0, w: 0.90611964}
   m_LocalPosition: {x: 44.96868, y: 1.5209999, z: 444.2905}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.3451247, y: 2.3451247, z: 2.3451247}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3933662501202177337}
@@ -397,3 +399,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
   handPoint: {fileID: 7910276571375375869}
   pickupRange: 3
+--- !u!114 &3529821004786960554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7107137739920480307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ffef32a9b6a004b8bdf700ccab5fcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
+  pausePanel: {fileID: 0}
+--- !u!114 &2162577404004913432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7107137739920480307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3deb7b5b37fd84846a14788e92bf688e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVehicleInteraction
+  playerCamera: {fileID: 4495800752148930158}
+  playerVisual: {fileID: 7107137739920480307}
+  distanciaInteracao: 4
+  teclaInteracao: 102
+  playerMovement: {fileID: 2622205610619270582}

@@ -17,8 +17,6 @@ public class CarController : MonoBehaviour
     [Header("Som")]
     public AudioSource audioMotor;
 
-    [Header("Reset")]
-    [SerializeField] private float tempoParaResetar = 25f;
 
     private Rigidbody rb;
 
@@ -28,6 +26,7 @@ public class CarController : MonoBehaviour
     private float tempoParado;
 
     private bool estaDirigindo = false;
+    public bool EstaDirigindo => estaDirigindo;
 
 
     void Start()
@@ -47,42 +46,11 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-        // =====================================================
-        // SAIR DO CARRO
-        // =====================================================
-
-        // IMPORTANTE:
-        // Essa verificação fica ANTES do "return".
-        if (estaDirigindo && Input.GetKeyDown(KeyCode.F))
-        {
-            PlayerVehicleInteraction player =
-                FindFirstObjectByType<PlayerVehicleInteraction>();
-
-            if (player != null)
-            {
-                player.SairDoCarro();
-            }
-
-            return;
-        }
-
-
-        // Se não estiver dirigindo, não executa o resto
         if (!estaDirigindo)
             return;
 
-
-        // =====================================================
-        // MOVIMENTO
-        // =====================================================
-
         movimento = Input.GetAxis("Vertical");
         direcao = Input.GetAxis("Horizontal");
-
-
-        // =====================================================
-        // SOM DO MOTOR
-        // =====================================================
 
         bool estaMovendo =
             Mathf.Abs(movimento) > 0.1f ||
@@ -100,27 +68,6 @@ public class CarController : MonoBehaviour
                 if (audioMotor.isPlaying)
                     audioMotor.Stop();
             }
-        }
-
-
-        // =====================================================
-        // RESET SE FICAR PARADO
-        // =====================================================
-
-        if (rb.linearVelocity.magnitude < 0.2f)
-        {
-            tempoParado += Time.deltaTime;
-
-            if (tempoParado >= tempoParaResetar)
-            {
-                SceneManager.LoadScene(
-                    SceneManager.GetActiveScene().buildIndex
-                );
-            }
-        }
-        else
-        {
-            tempoParado = 0f;
         }
     }
 

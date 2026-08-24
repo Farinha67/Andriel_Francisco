@@ -18,7 +18,6 @@ public class PlayerVehicleInteraction : MonoBehaviour
 
     private AudioListener playerAudioListener;
 
-    // Carro que o jogador está usando
     private CarController carroAtual;
 
 
@@ -118,55 +117,36 @@ public class PlayerVehicleInteraction : MonoBehaviour
         }
     }
 
-
-    // =========================================================
-    // ENTRAR NO CARRO
-    // =========================================================
-
     void EntrarNoCarro(CarController carro)
     {
         carroAtual = carro;
 
-
-        // Desativa movimento do player
         if (playerMovement != null)
         {
             playerMovement.enabled = false;
         }
 
-
-        // Desativa câmera do player
         if (playerCamera != null)
         {
             playerCamera.enabled = false;
         }
 
-
-        // Desativa Audio Listener do player
         if (playerAudioListener != null)
         {
             playerAudioListener.enabled = false;
         }
 
 
-        // Esconde o personagem
         if (playerVisual != null)
         {
             playerVisual.SetActive(false);
         }
 
-
-        // Ativa carro
         carro.AtivarModoDirigir();
 
 
         Debug.Log("ENTROU NO CARRO");
     }
-
-
-    // =========================================================
-    // SAIR DO CARRO
-    // =========================================================
 
     public void SairDoCarro()
     {
@@ -180,7 +160,6 @@ public class PlayerVehicleInteraction : MonoBehaviour
         }
 
 
-        // Verifica ExitPoint
         if (carroAtual.exitPoint == null)
         {
             Debug.LogError(
@@ -190,48 +169,34 @@ public class PlayerVehicleInteraction : MonoBehaviour
             return;
         }
 
-
-        // Coloca Player ao lado do carro
         transform.position =
             carroAtual.exitPoint.position;
 
         transform.rotation =
             carroAtual.exitPoint.rotation;
 
-
-        // Mostra personagem
         if (playerVisual != null)
         {
             playerVisual.SetActive(true);
         }
 
-
-        // Liga movimento
         if (playerMovement != null)
         {
             playerMovement.enabled = true;
         }
 
-
-        // Liga câmera do player
         if (playerCamera != null)
         {
             playerCamera.enabled = true;
         }
 
-
-        // Liga Audio Listener do player
         if (playerAudioListener != null)
         {
             playerAudioListener.enabled = true;
         }
 
-
-        // Desliga carro
         carroAtual.DesativarModoDirigir();
 
-
-        // Remove referência
         carroAtual = null;
 
 

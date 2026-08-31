@@ -7,16 +7,17 @@ public class CarController : MonoBehaviour
     [Header("Movimento")]
     [SerializeField] private float forcaMotor = 25f;
     [SerializeField] private float velocidadeMaxima = 20f;
-    [SerializeField] private float velocidadeRotação = 80f;
+    [SerializeField] private float velocidadeRotacao = 80f;
     [SerializeField] private float freio = 5f;
 
     [Header("Física & Estabilidade")]
     [SerializeField] private float massa = 1200f;
     [SerializeField] private float drag = 0.2f;
     [SerializeField] private float angularDrag = 3f;
-    [SerializeField] private float forcaParaBaixo = 50f; // Prende o carro no chão
-    [SerializeField] private LayerMask camadaTerreno;    // Selecione a Layer 'Terrain'
-    [SerializeField] private float distanciaChao = 1.2f;  // Distância do centro do carro até o chão
+
+    [Header("Detecção do chão")]
+    [SerializeField] private LayerMask camadaTerreno;
+    [SerializeField] private float distanciaChao = 1.5f;
 
     [Header("Câmera")]
     [SerializeField] private Camera cameraCarro;
@@ -28,8 +29,10 @@ public class CarController : MonoBehaviour
     [SerializeField] private AudioSource audioMotor;
 
     private Rigidbody rb;
+
     private float movimento;
-    private float direção;
+    private float direcao;
+
     private bool estaDirigindo = false;
     private bool estaNoChao = false;
 
@@ -43,7 +46,10 @@ public class CarController : MonoBehaviour
         rb.linearDamping = drag;
         rb.angularDamping = angularDrag;
 
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.useGravity = true;
+
+        rb.collisionDetectionMode =
+            CollisionDetectionMode.ContinuousDynamic;
 
         rb.constraints =
             RigidbodyConstraints.FreezeRotationX |
@@ -67,7 +73,7 @@ public class CarController : MonoBehaviour
             return;
 
         movimento = Input.GetAxis("Vertical");
-        direção = Input.GetAxis("Horizontal");
+        direcao = Input.GetAxis("Horizontal");
 
         ControlarSom();
     }
@@ -78,7 +84,6 @@ public class CarController : MonoBehaviour
             return;
 
         ChecarChao();
-        AplicarDownforce();
         MovimentoFisico();
         RotacaoFisica();
         LimitarVelocidade();
@@ -86,32 +91,50 @@ public class CarController : MonoBehaviour
 
     private void ChecarChao()
     {
-        // Dispara um raio para baixo a partir do centro do carro
-        estaNoChao = Physics.Raycast(transform.position, -transform.up, distanciaChao, camadaTerreno);
-    }
+        Vector3 origem = transform.position;
 
-    private void AplicarDownforce()
-    {
-        // Se estiver no chão (ou muito perto dele), empurra o carro para baixo
-        if (estaNoChao)
-        {
-            rb.AddForce(-transform.up * forcaParaBaixo, ForceMode.Acceleration);
-        }
+        estaNoChao = Physics.Raycast(
+            origem,
+            Vector3.down,
+            distanciaChao,
+            camadaTerreno,
+            QueryTriggerInteraction.Ignore
+        );
+
+        Debug.DrawRay(
+            origem,
+            Vector3.down * distanciaChao,
+            estaNoChao ? Color.green : Color.red
+        );
     }
 
     private void MovimentoFisico()
     {
-        // Só acelera se estiver tocando o chão
-        if (estaNoChao && Mathf.Abs(movimento) > 0.01f)
+        if (!estaNoChao)
+            return;
+
+        if (Mathf.Abs(movimento) > 0.01f)
         {
-            Vector3 forca = transform.forward * movimento * forcaMotor;
-            rb.AddForce(forca, ForceMode.Acceleration);
+            Vector3 forca =
+                transform.forward *
+                movimento *
+                forcaMotor;
+
+            rb.AddForce(
+                forca,
+                ForceMode.Acceleration
+            );
         }
-        else if (estaNoChao)
+        else
         {
             Vector3 velocidade = rb.linearVelocity;
 
-            Vector3 velocidadeHorizontal = new Vector3(velocidade.x, 0f, velocidade.z);
+            Vector3 velocidadeHorizontal =
+                new Vector3(
+                    velocidade.x,
+                    0f,
+                    velocidade.z
+                );
 
             velocidadeHorizontal = Vector3.Lerp(
                 velocidadeHorizontal,
@@ -129,25 +152,40 @@ public class CarController : MonoBehaviour
 
     private void RotacaoFisica()
     {
-        if (!estaNoChao || Mathf.Abs(movimento) < 0.05f)
+        if (!estaNoChao)
             return;
 
-        float velocidadeAtual = rb.linearVelocity.magnitude;
+        if (Mathf.Abs(movimento) < 0.05f)
+            return;
+
+        float velocidadeAtual =
+            new Vector3(
+                rb.linearVelocity.x,
+                0f,
+                rb.linearVelocity.z
+            ).magnitude;
 
         if (velocidadeAtual < 0.1f)
             return;
 
-        float fatorVelocidade = Mathf.Clamp01(velocidadeAtual / velocidadeMaxima);
+        float fatorVelocidade =
+            Mathf.Clamp01(
+                velocidadeAtual / velocidadeMaxima
+            );
 
         float rotacao =
-            direção *
-            velocidadeRotação *
+            direcao *
+            velocidadeRotacao *
             fatorVelocidade *
             Time.fixedDeltaTime;
 
         Quaternion novaRotacao =
             rb.rotation *
-            Quaternion.Euler(0f, rotacao, 0f);
+            Quaternion.Euler(
+                0f,
+                rotacao,
+                0f
+            );
 
         rb.MoveRotation(novaRotacao);
     }
@@ -156,11 +194,12 @@ public class CarController : MonoBehaviour
     {
         Vector3 velocidade = rb.linearVelocity;
 
-        Vector3 velocidadeHorizontal = new Vector3(
-            velocidade.x,
-            0f,
-            velocidade.z
-        );
+        Vector3 velocidadeHorizontal =
+            new Vector3(
+                velocidade.x,
+                0f,
+                velocidade.z
+            );
 
         if (velocidadeHorizontal.magnitude > velocidadeMaxima)
         {
@@ -183,7 +222,11 @@ public class CarController : MonoBehaviour
 
         bool estaMovendo =
             Mathf.Abs(movimento) > 0.1f ||
-            rb.linearVelocity.magnitude > 0.5f;
+            new Vector3(
+                rb.linearVelocity.x,
+                0f,
+                rb.linearVelocity.z
+            ).magnitude > 0.5f;
 
         if (estaMovendo)
         {
@@ -205,7 +248,8 @@ public class CarController : MonoBehaviour
         {
             cameraCarro.enabled = true;
 
-            AudioListener listener = cameraCarro.GetComponent<AudioListener>();
+            AudioListener listener =
+                cameraCarro.GetComponent<AudioListener>();
 
             if (listener != null)
                 listener.enabled = true;
@@ -219,16 +263,18 @@ public class CarController : MonoBehaviour
         estaDirigindo = false;
 
         movimento = 0f;
-        direção = 0f;
+        direcao = 0f;
 
-        if (audioMotor != null && audioMotor.isPlaying)
+        if (audioMotor != null &&
+            audioMotor.isPlaying)
         {
             audioMotor.Stop();
         }
 
         if (cameraCarro != null)
         {
-            AudioListener listener = cameraCarro.GetComponent<AudioListener>();
+            AudioListener listener =
+                cameraCarro.GetComponent<AudioListener>();
 
             if (listener != null)
                 listener.enabled = false;

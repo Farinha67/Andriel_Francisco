@@ -1445,6 +1445,7 @@ GameObject:
   - component: {fileID: 2046150159}
   - component: {fileID: 2046150158}
   - component: {fileID: 2046150157}
+  - component: {fileID: 2046150160}
   m_Layer: 0
   m_Name: NextStage
   m_TagString: Untagged
@@ -1501,6 +1502,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2063872357}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!111 &2046150160
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046150156}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!1 &2063872356
 GameObject:
   m_ObjectHideFlags: 0

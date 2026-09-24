@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/DriveGame.unity
     guid: b8b322bc12b0c7d48ac78f9a4c19fd1a
   - enabled: 1
+    path: Assets/Scenes/CutScene.unity
+    guid: 2d047ce574c3f0643812819468f8dfd0
+  - enabled: 1
     path: Assets/Scenes/Final.unity
     guid: 11c6addc2871da148b92e57b55b58332
   m_configObjects:

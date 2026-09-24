@@ -946,11 +946,8 @@ PlayableDirector:
     value: {fileID: 1128476186}
   - key: {fileID: 7658638304998360332, guid: b132649927ee0194ab318b28116c003b, type: 2}
     value: {fileID: 741629676}
-  - key: {fileID: 0}
-    value: {fileID: 0}
   m_ExposedReferences:
-    m_References:
-    - 73099d690ca101d409c6ec8d4574826c: {fileID: 0}
+    m_References: []
 --- !u!4 &615405092
 Transform:
   m_ObjectHideFlags: 0
@@ -1876,12 +1873,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
-  m_RenderShadows: 0
+  m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 0
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1

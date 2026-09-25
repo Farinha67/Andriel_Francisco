@@ -5,9 +5,9 @@ using System.Collections;
 
 public class SceneTransition : MonoBehaviour
 {
-    public Image fadeImage; // Arraste uma imagem preta de UI aqui
-    public float fadeDuration = 1.5f; // Duração do escurecimento em segundos
-    public string nextSceneName; // Nome da próxima cena
+    public Image fadeImage; 
+    public float fadeDuration = 1.5f; 
+    public string nextSceneName; 
 
     void Start()
     {
@@ -20,7 +20,7 @@ public class SceneTransition : MonoBehaviour
         }
     }
 
-    // Chame este método no fim da sua cutscene
+
     public void StartTransition()
     {
         StartCoroutine(FadeAndLoadScene());
@@ -31,7 +31,7 @@ public class SceneTransition : MonoBehaviour
         float timer = 0f;
         Color color = fadeImage.color;
 
-        // Faz o Fade para o preto
+
         while (timer < fadeDuration)
         {
             timer += Time.deltaTime;
@@ -40,7 +40,6 @@ public class SceneTransition : MonoBehaviour
             yield return null;
         }
 
-        // Carrega a próxima cena após a tela ficar preta
         SceneManager.LoadScene(nextSceneName);
     }
 }

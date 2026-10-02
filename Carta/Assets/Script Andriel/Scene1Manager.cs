@@ -22,9 +22,6 @@ public class Scene1Manager : MonoBehaviour
     [Header("PRÓXIMA CENA")]
     public string proximaCena = "Cena2";
 
-    [Header("TEMPOS")]
-    public float tempoFadeDormir = 5f;
-
     private bool caixasCompletas = false;
     private bool avoTerminou = false;
     private bool podeDormir = false;
@@ -44,7 +41,8 @@ public class Scene1Manager : MonoBehaviour
     {
         CriarInterface();
 
-        objectiveText.text = "Coloque as caixas no carro: 0/" + caixasNecessarias;
+        objectiveText.text =
+            "Coloque as caixas no carro: 0/" + caixasNecessarias;
     }
 
     // =========================================================
@@ -58,65 +56,103 @@ public class Scene1Manager : MonoBehaviour
         canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        UnityEngine.UI.CanvasScaler scaler =
+            canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+
+        scaler.uiScaleMode =
+            UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
+        scaler.referenceResolution = new Vector2(1920, 1080);
+
         canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
-        // ==============================
-        // PAINEL DE DIÁLOGO
-        // ==============================
+        // PAINEL DO DIÁLOGO
 
         dialoguePanel = new GameObject("DialoguePanel");
-        dialoguePanel.transform.SetParent(canvasObj.transform, false);
 
-        var panelImage = dialoguePanel.AddComponent<UnityEngine.UI.Image>();
-        panelImage.color = new Color(0, 0, 0, 0.75f);
+        dialoguePanel.transform.SetParent(
+            canvasObj.transform,
+            false
+        );
 
-        RectTransform panelRect = dialoguePanel.GetComponent<RectTransform>();
+        UnityEngine.UI.Image panelImage =
+            dialoguePanel.AddComponent<UnityEngine.UI.Image>();
 
-        panelRect.anchorMin = new Vector2(0.05f, 0.05f);
-        panelRect.anchorMax = new Vector2(0.95f, 0.22f);
+        panelImage.color =
+            new Color(0, 0, 0, 0.75f);
+
+        RectTransform panelRect =
+            dialoguePanel.GetComponent<RectTransform>();
+
+        panelRect.anchorMin =
+            new Vector2(0.05f, 0.05f);
+
+        panelRect.anchorMax =
+            new Vector2(0.95f, 0.22f);
+
         panelRect.offsetMin = Vector2.zero;
         panelRect.offsetMax = Vector2.zero;
 
-        // ==============================
-        // TEXTO
-        // ==============================
+        // TEXTO DO DIÁLOGO
 
-        GameObject textObj = new GameObject("DialogueText");
-        textObj.transform.SetParent(dialoguePanel.transform, false);
+        GameObject textObj =
+            new GameObject("DialogueText");
 
-        dialogueText = textObj.AddComponent<TextMeshProUGUI>();
+        textObj.transform.SetParent(
+            dialoguePanel.transform,
+            false
+        );
+
+        dialogueText =
+            textObj.AddComponent<TextMeshProUGUI>();
 
         dialogueText.fontSize = 28;
-        dialogueText.alignment = TextAlignmentOptions.Center;
+        dialogueText.alignment =
+            TextAlignmentOptions.Center;
+
         dialogueText.color = Color.white;
 
-        RectTransform textRect = dialogueText.GetComponent<RectTransform>();
+        RectTransform textRect =
+            dialogueText.GetComponent<RectTransform>();
 
-        textRect.anchorMin = new Vector2(0.05f, 0.1f);
-        textRect.anchorMax = new Vector2(0.95f, 0.9f);
+        textRect.anchorMin =
+            new Vector2(0.05f, 0.1f);
+
+        textRect.anchorMax =
+            new Vector2(0.95f, 0.9f);
+
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
 
         dialoguePanel.SetActive(false);
 
-        // ==============================
         // OBJETIVO
-        // ==============================
 
-        GameObject objectiveObj = new GameObject("ObjectiveText");
-        objectiveObj.transform.SetParent(canvasObj.transform, false);
+        GameObject objectiveObj =
+            new GameObject("ObjectiveText");
 
-        objectiveText = objectiveObj.AddComponent<TextMeshProUGUI>();
+        objectiveObj.transform.SetParent(
+            canvasObj.transform,
+            false
+        );
+
+        objectiveText =
+            objectiveObj.AddComponent<TextMeshProUGUI>();
 
         objectiveText.fontSize = 25;
-        objectiveText.alignment = TextAlignmentOptions.TopLeft;
+        objectiveText.alignment =
+            TextAlignmentOptions.TopLeft;
+
         objectiveText.color = Color.white;
 
-        RectTransform objectiveRect = objectiveText.GetComponent<RectTransform>();
+        RectTransform objectiveRect =
+            objectiveText.GetComponent<RectTransform>();
 
-        objectiveRect.anchorMin = new Vector2(0.03f, 0.88f);
-        objectiveRect.anchorMax = new Vector2(0.5f, 0.98f);
+        objectiveRect.anchorMin =
+            new Vector2(0.03f, 0.88f);
+
+        objectiveRect.anchorMax =
+            new Vector2(0.6f, 0.98f);
 
         objectiveRect.offsetMin = Vector2.zero;
         objectiveRect.offsetMax = Vector2.zero;
@@ -138,16 +174,17 @@ public class Scene1Manager : MonoBehaviour
 
         objectiveText.text =
             "Coloque as caixas no carro: " +
-            caixasColocadas + "/" +
+            caixasColocadas +
+            "/" +
             caixasNecessarias;
 
         if (caixasColocadas >= caixasNecessarias)
         {
             caixasCompletas = true;
 
-            objectiveText.text = "Caixas carregadas!";
-
-            StartCoroutine(DialogoDepoisDasCaixas());
+            StartCoroutine(
+                DialogoDepoisDasCaixas()
+            );
         }
     }
 
@@ -155,40 +192,41 @@ public class Scene1Manager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        yield return StartCoroutine(Falar(
-            "Neto: Pronto, vó. O carro ficou cheio."
-        ));
+        yield return StartCoroutine(
+            Falar(
+                "Todas as caixas estão prontas."
+            )
+        );
 
-        yield return StartCoroutine(Falar(
-            "Vó: Então vamos viajar, meu filho."
-        ));
+        yield return StartCoroutine(
+            Falar(
+                "Preciso falar com a vó antes de sair."
+            )
+        );
 
-        yield return StartCoroutine(Falar(
-            "Neto: Só falta você."
-        ));
+        objectiveText.text =
+            "Vá falar com sua vó.";
+    }
 
-        yield return StartCoroutine(Falar(
-            "Vó: Eu vou em cima do carro mesmo."
-        ));
+    // =========================================================
+    // PODE FALAR COM A VÓ?
+    // =========================================================
 
-        yield return StartCoroutine(Falar(
-            "Neto: Em cima do carro?!"
-        ));
-
-        yield return StartCoroutine(Falar(
-            "Vó: Sim. Me enrola naquele tapete."
-        ));
-
-        objectiveText.text = "Vá falar com sua vó.";
-
-        grandma.PodeIr();
+    public bool PodeFalarComAvo()
+    {
+        return caixasCompletas &&
+               !avoTerminou &&
+               !dormindo;
     }
 
     // =========================================================
     // DIÁLOGO
     // =========================================================
 
-    public IEnumerator Falar(string texto, float tempo = 2.5f)
+    public IEnumerator Falar(
+        string texto,
+        float tempo = 2.5f
+    )
     {
         dialoguePanel.SetActive(true);
 
@@ -200,7 +238,7 @@ public class Scene1Manager : MonoBehaviour
     }
 
     // =========================================================
-    // VÓ TERMINOU
+    // VÓ CHEGOU NO CARRO
     // =========================================================
 
     public void AvoChegouNoCarro()
@@ -210,15 +248,19 @@ public class Scene1Manager : MonoBehaviour
 
         avoTerminou = true;
 
-        StartCoroutine(FinalizarParteDaAvo());
+        StartCoroutine(
+            FinalizarParteDaAvo()
+        );
     }
 
     IEnumerator FinalizarParteDaAvo()
     {
         yield return new WaitForSeconds(0.5f);
 
-        // Cria o tapete
-        if (tapetePrefab != null && pontoTapete != null)
+        // CRIA O TAPETE
+
+        if (tapetePrefab != null &&
+            pontoTapete != null)
         {
             Instantiate(
                 tapetePrefab,
@@ -227,19 +269,26 @@ public class Scene1Manager : MonoBehaviour
             );
         }
 
-        yield return StartCoroutine(Falar(
-            "Neto: Beleza... agora sim o carro está pronto."
-        ));
+        yield return StartCoroutine(
+            Falar(
+                "Neto: Pronto... agora sim."
+            )
+        );
 
-        yield return StartCoroutine(Falar(
-            "Estou cansado. O dia foi cheio demais..."
-        ));
+        yield return StartCoroutine(
+            Falar(
+                "Estou cansado. O dia foi cheio demais."
+            )
+        );
 
-        yield return StartCoroutine(Falar(
-            "Vou descansar um pouco."
-        ));
+        yield return StartCoroutine(
+            Falar(
+                "Vou descansar um pouco."
+            )
+        );
 
-        objectiveText.text = "Vá até a cama descansar.";
+        objectiveText.text =
+            "Vá até a cama descansar.";
 
         podeDormir = true;
     }
@@ -260,20 +309,28 @@ public class Scene1Manager : MonoBehaviour
 
         dormindo = true;
 
-        StartCoroutine(DormirCoroutine());
+        StartCoroutine(
+            DormirCoroutine()
+        );
     }
 
     IEnumerator DormirCoroutine()
     {
         objectiveText.text = "";
 
-        yield return StartCoroutine(Falar(
-            "Vou dormir..."
-        ));
+        yield return StartCoroutine(
+            Falar(
+                "Vou dormir..."
+            )
+        );
 
-        yield return StartCoroutine(FadeParaPreto());
+        yield return StartCoroutine(
+            FadeParaPreto()
+        );
 
-        SceneManager.LoadScene(proximaCena);
+        SceneManager.LoadScene(
+            proximaCena
+        );
     }
 
     // =========================================================
@@ -282,15 +339,22 @@ public class Scene1Manager : MonoBehaviour
 
     IEnumerator FadeParaPreto()
     {
-        GameObject fadeObj = new GameObject("Fade");
+        GameObject fadeObj =
+            new GameObject("Fade");
 
-        fadeObj.transform.SetParent(canvas.transform, false);
+        fadeObj.transform.SetParent(
+            canvas.transform,
+            false
+        );
 
-        var image = fadeObj.AddComponent<UnityEngine.UI.Image>();
+        UnityEngine.UI.Image image =
+            fadeObj.AddComponent<UnityEngine.UI.Image>();
 
-        image.color = new Color(0, 0, 0, 0);
+        image.color =
+            new Color(0, 0, 0, 0);
 
-        RectTransform rect = fadeObj.GetComponent<RectTransform>();
+        RectTransform rect =
+            fadeObj.GetComponent<RectTransform>();
 
         rect.anchorMin = Vector2.zero;
         rect.anchorMax = Vector2.one;
@@ -300,8 +364,13 @@ public class Scene1Manager : MonoBehaviour
 
         Color cor = image.color;
 
-        // Escurecendo
-        for (float alpha = 0; alpha < 1f; alpha += Time.deltaTime / 2f)
+        // ESCURECER
+
+        for (
+            float alpha = 0;
+            alpha < 1f;
+            alpha += Time.deltaTime / 2f
+        )
         {
             cor.a = alpha;
             image.color = cor;
@@ -312,7 +381,8 @@ public class Scene1Manager : MonoBehaviour
         cor.a = 1f;
         image.color = cor;
 
-        // Tela preta
+        // 5 SEGUNDOS PRETO
+
         yield return new WaitForSeconds(5f);
     }
 }

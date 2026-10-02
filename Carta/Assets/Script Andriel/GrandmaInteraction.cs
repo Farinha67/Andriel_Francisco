@@ -1,31 +1,56 @@
 using UnityEngine;
+using System.Collections;
 
 public class GrandmaInteraction : MonoBehaviour
 {
-    public GrandmaToCar grandmaMove;
+    public GrandmaToCar grandma;
 
     private bool playerPerto = false;
-    private bool falou = false;
+    private bool conversou = false;
 
     void Update()
     {
-        if (playerPerto && Input.GetKeyDown(KeyCode.E) && !falou)
+        if (!playerPerto)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.E) && !conversou)
         {
-            falou = true;
+            conversou = true;
 
-            Debug.Log("Neto: Vó, tem certeza?");
-            Debug.Log("Vó: Claro meu filho.");
-
-            Invoke(nameof(FazerVovoAndar), 3f);
+            StartCoroutine(Conversar());
         }
     }
 
-    void FazerVovoAndar()
+    IEnumerator Conversar()
     {
-        grandmaMove.IrAteCarro();
+        yield return StartCoroutine(
+            Scene1Manager.Instance.Falar(
+                "Neto: Vó, você realmente vai em cima do carro?"
+            )
+        );
+
+        yield return StartCoroutine(
+            Scene1Manager.Instance.Falar(
+                "Vó: Vou sim, meu filho."
+            )
+        );
+
+        yield return StartCoroutine(
+            Scene1Manager.Instance.Falar(
+                "Vó: Só me enrola naquele tapete."
+            )
+        );
+
+        yield return StartCoroutine(
+            Scene1Manager.Instance.Falar(
+                "Neto: Tá bom então..."
+            )
+        );
+
+        grandma.IrAteCarro();
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
@@ -33,7 +58,7 @@ public class GrandmaInteraction : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {

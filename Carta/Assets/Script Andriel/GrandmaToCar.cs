@@ -2,29 +2,70 @@ using UnityEngine;
 
 public class GrandmaToCar : MonoBehaviour
 {
-    public Transform carro;
+    public Transform pontoCarro;
+
     public float velocidade = 2f;
 
+    private bool podeAndar = false;
     private bool andando = false;
+    private bool terminou = false;
 
     void Update()
     {
-        if (!andando) return;
+        if (!andando || terminou)
+            return;
 
         transform.position = Vector3.MoveTowards(
             transform.position,
-            carro.position,
+            pontoCarro.position,
             velocidade * Time.deltaTime
         );
 
-        if (Vector3.Distance(transform.position, carro.position) < 1f)
+        // Faz a vó olhar para o ponto
+        Vector3 direcao = pontoCarro.position - transform.position;
+
+        if (direcao != Vector3.zero)
         {
-            gameObject.SetActive(false); // some ao chegar no carro
+            direcao.y = 0;
+
+            transform.rotation = Quaternion.LookRotation(direcao);
         }
+
+        if (Vector3.Distance(transform.position, pontoCarro.position) < 0.15f)
+        {
+            terminou = true;
+            andando = false;
+
+            ChegouNoCarro();
+        }
+    }
+
+    public void PodeIr()
+    {
+        podeAndar = true;
     }
 
     public void IrAteCarro()
     {
+        if (!podeAndar)
+            return;
+
         andando = true;
+    }
+
+    void ChegouNoCarro()
+    {
+        // Pequena pausa antes de sumir
+        Invoke(nameof(Sumir), 0.5f);
+    }
+
+    void Sumir()
+    {
+        gameObject.SetActive(false);
+
+        if (Scene1Manager.Instance != null)
+        {
+            Scene1Manager.Instance.AvoChegouNoCarro();
+        }
     }
 }

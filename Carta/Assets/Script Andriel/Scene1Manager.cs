@@ -1,0 +1,318 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
+using System.Collections;
+
+public class Scene1Manager : MonoBehaviour
+{
+    public static Scene1Manager Instance;
+
+    [Header("CAIXAS")]
+    public int caixasNecessarias = 5;
+
+    private int caixasColocadas = 0;
+
+    [Header("VÓ")]
+    public GrandmaToCar grandma;
+
+    [Header("TAPETE")]
+    public GameObject tapetePrefab;
+    public Transform pontoTapete;
+
+    [Header("PRÓXIMA CENA")]
+    public string proximaCena = "Cena2";
+
+    [Header("TEMPOS")]
+    public float tempoFadeDormir = 5f;
+
+    private bool caixasCompletas = false;
+    private bool avoTerminou = false;
+    private bool podeDormir = false;
+    private bool dormindo = false;
+
+    private Canvas canvas;
+    private TextMeshProUGUI dialogueText;
+    private TextMeshProUGUI objectiveText;
+    private GameObject dialoguePanel;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+    {
+        CriarInterface();
+
+        objectiveText.text = "Coloque as caixas no carro: 0/" + caixasNecessarias;
+    }
+
+    // =========================================================
+    // INTERFACE
+    // =========================================================
+
+    void CriarInterface()
+    {
+        GameObject canvasObj = new GameObject("Canvas_Dinamico");
+
+        canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+        // ==============================
+        // PAINEL DE DIÁLOGO
+        // ==============================
+
+        dialoguePanel = new GameObject("DialoguePanel");
+        dialoguePanel.transform.SetParent(canvasObj.transform, false);
+
+        var panelImage = dialoguePanel.AddComponent<UnityEngine.UI.Image>();
+        panelImage.color = new Color(0, 0, 0, 0.75f);
+
+        RectTransform panelRect = dialoguePanel.GetComponent<RectTransform>();
+
+        panelRect.anchorMin = new Vector2(0.05f, 0.05f);
+        panelRect.anchorMax = new Vector2(0.95f, 0.22f);
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+
+        // ==============================
+        // TEXTO
+        // ==============================
+
+        GameObject textObj = new GameObject("DialogueText");
+        textObj.transform.SetParent(dialoguePanel.transform, false);
+
+        dialogueText = textObj.AddComponent<TextMeshProUGUI>();
+
+        dialogueText.fontSize = 28;
+        dialogueText.alignment = TextAlignmentOptions.Center;
+        dialogueText.color = Color.white;
+
+        RectTransform textRect = dialogueText.GetComponent<RectTransform>();
+
+        textRect.anchorMin = new Vector2(0.05f, 0.1f);
+        textRect.anchorMax = new Vector2(0.95f, 0.9f);
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+
+        dialoguePanel.SetActive(false);
+
+        // ==============================
+        // OBJETIVO
+        // ==============================
+
+        GameObject objectiveObj = new GameObject("ObjectiveText");
+        objectiveObj.transform.SetParent(canvasObj.transform, false);
+
+        objectiveText = objectiveObj.AddComponent<TextMeshProUGUI>();
+
+        objectiveText.fontSize = 25;
+        objectiveText.alignment = TextAlignmentOptions.TopLeft;
+        objectiveText.color = Color.white;
+
+        RectTransform objectiveRect = objectiveText.GetComponent<RectTransform>();
+
+        objectiveRect.anchorMin = new Vector2(0.03f, 0.88f);
+        objectiveRect.anchorMax = new Vector2(0.5f, 0.98f);
+
+        objectiveRect.offsetMin = Vector2.zero;
+        objectiveRect.offsetMax = Vector2.zero;
+    }
+
+    // =========================================================
+    // CAIXAS
+    // =========================================================
+
+    public void CaixaColocada()
+    {
+        if (caixasCompletas)
+            return;
+
+        caixasColocadas++;
+
+        if (caixasColocadas > caixasNecessarias)
+            caixasColocadas = caixasNecessarias;
+
+        objectiveText.text =
+            "Coloque as caixas no carro: " +
+            caixasColocadas + "/" +
+            caixasNecessarias;
+
+        if (caixasColocadas >= caixasNecessarias)
+        {
+            caixasCompletas = true;
+
+            objectiveText.text = "Caixas carregadas!";
+
+            StartCoroutine(DialogoDepoisDasCaixas());
+        }
+    }
+
+    IEnumerator DialogoDepoisDasCaixas()
+    {
+        yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(Falar(
+            "Neto: Pronto, vó. O carro ficou cheio."
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Vó: Então vamos viajar, meu filho."
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Neto: Só falta você."
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Vó: Eu vou em cima do carro mesmo."
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Neto: Em cima do carro?!"
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Vó: Sim. Me enrola naquele tapete."
+        ));
+
+        objectiveText.text = "Vá falar com sua vó.";
+
+        grandma.PodeIr();
+    }
+
+    // =========================================================
+    // DIÁLOGO
+    // =========================================================
+
+    public IEnumerator Falar(string texto, float tempo = 2.5f)
+    {
+        dialoguePanel.SetActive(true);
+
+        dialogueText.text = texto;
+
+        yield return new WaitForSeconds(tempo);
+
+        dialoguePanel.SetActive(false);
+    }
+
+    // =========================================================
+    // VÓ TERMINOU
+    // =========================================================
+
+    public void AvoChegouNoCarro()
+    {
+        if (avoTerminou)
+            return;
+
+        avoTerminou = true;
+
+        StartCoroutine(FinalizarParteDaAvo());
+    }
+
+    IEnumerator FinalizarParteDaAvo()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        // Cria o tapete
+        if (tapetePrefab != null && pontoTapete != null)
+        {
+            Instantiate(
+                tapetePrefab,
+                pontoTapete.position,
+                pontoTapete.rotation
+            );
+        }
+
+        yield return StartCoroutine(Falar(
+            "Neto: Beleza... agora sim o carro está pronto."
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Estou cansado. O dia foi cheio demais..."
+        ));
+
+        yield return StartCoroutine(Falar(
+            "Vou descansar um pouco."
+        ));
+
+        objectiveText.text = "Vá até a cama descansar.";
+
+        podeDormir = true;
+    }
+
+    // =========================================================
+    // DORMIR
+    // =========================================================
+
+    public bool PodeDormir()
+    {
+        return podeDormir;
+    }
+
+    public void Dormir()
+    {
+        if (dormindo)
+            return;
+
+        dormindo = true;
+
+        StartCoroutine(DormirCoroutine());
+    }
+
+    IEnumerator DormirCoroutine()
+    {
+        objectiveText.text = "";
+
+        yield return StartCoroutine(Falar(
+            "Vou dormir..."
+        ));
+
+        yield return StartCoroutine(FadeParaPreto());
+
+        SceneManager.LoadScene(proximaCena);
+    }
+
+    // =========================================================
+    // FADE
+    // =========================================================
+
+    IEnumerator FadeParaPreto()
+    {
+        GameObject fadeObj = new GameObject("Fade");
+
+        fadeObj.transform.SetParent(canvas.transform, false);
+
+        var image = fadeObj.AddComponent<UnityEngine.UI.Image>();
+
+        image.color = new Color(0, 0, 0, 0);
+
+        RectTransform rect = fadeObj.GetComponent<RectTransform>();
+
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        Color cor = image.color;
+
+        // Escurecendo
+        for (float alpha = 0; alpha < 1f; alpha += Time.deltaTime / 2f)
+        {
+            cor.a = alpha;
+            image.color = cor;
+
+            yield return null;
+        }
+
+        cor.a = 1f;
+        image.color = cor;
+
+        // Tela preta
+        yield return new WaitForSeconds(5f);
+    }
+}

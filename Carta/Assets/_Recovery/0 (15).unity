@@ -309,7 +309,6 @@ GameObject:
   - component: {fileID: 69357791}
   - component: {fileID: 69357795}
   - component: {fileID: 69357796}
-  - component: {fileID: 69357798}
   - component: {fileID: 69357797}
   m_Layer: 0
   m_Name: Grandma
@@ -406,7 +405,7 @@ Transform:
   m_GameObject: {fileID: 69357789}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 53.49, y: 0.94, z: 423.9}
+  m_LocalPosition: {x: 72.37, y: 1, z: 410.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -471,23 +470,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 69357789}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f7db7c8adc0557448ae9466e0f9d3b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GrandmaInteraction
-  grandma: {fileID: 69357798}
---- !u!114 &69357798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 69357789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6771aaaed05cd4c4398e55d94034fe40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrandmaToCar
-  pontoCarro: {fileID: 1842136233}
+  carro: {fileID: 1493120761}
   velocidade: 2
 --- !u!1 &99687108
 GameObject:
@@ -695,19 +681,16 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7016020133083651673, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1161270704}
-    - targetCorrespondingSourceObject: {fileID: 7016020133083651673, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1842136233}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1493120759}
     - targetCorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1493120762}
+      addedObject: {fileID: 1493120760}
     - targetCorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1493120763}
+      addedObject: {fileID: 1493120762}
   m_SourcePrefab: {fileID: 100100000, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
 --- !u!1 &803625585
 GameObject:
@@ -6642,6 +6625,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -50.051, z: 0}
+--- !u!1 &1484101070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1484101071}
+  m_Layer: 0
+  m_Name: PontoDeBatida
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1484101071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484101070}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 49.17, y: 0.639, z: 439.1521}
+  m_LocalScale: {x: 1.5391, y: 1.5391, z: 1.5391}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1493120757 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
@@ -6668,6 +6682,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.9598576, y: 1.3691983, z: 1.6968788}
   m_Center: {x: 0.023972308, y: 0.37498188, z: -1.8714632}
+--- !u!114 &1493120760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493120757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46bfe82c23a051847b7cfca9f0ad54da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarDropZone
+  boxCounter: {fileID: 1294452144}
+  dialoguePanel: {fileID: 1671424118}
+  dialogueText: {fileID: 1037443041}
 --- !u!4 &1493120761 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7016020133083651673, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
@@ -6688,24 +6717,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.9311781, y: 1.929191, z: 4.6187053}
   m_Center: {x: -0.019681249, y: 0.4645963, z: 0.0031742281}
---- !u!114 &1493120763
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1493120757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46bfe82c23a051847b7cfca9f0ad54da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CarDropZone
 --- !u!1 &1556127044
 GameObject:
   m_ObjectHideFlags: 0
@@ -7175,56 +7192,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -50.051, z: 0}
---- !u!1 &1806468557
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1806468559}
-  - component: {fileID: 1806468558}
-  m_Layer: 0
-  m_Name: Scene1Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1806468558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1806468557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56a3e72e9aaa5b04ba49c49b79955e34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scene1Manager
-  caixasNecessarias: 5
-  grandma: {fileID: 0}
-  tapetePrefab: {fileID: 0}
-  pontoTapete: {fileID: 0}
-  proximaCena: Cena2
-  tempoFadeDormir: 5
---- !u!4 &1806468559
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1806468557}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 40.7093, y: 0, z: 441.86224}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1813517558
 GameObject:
   m_ObjectHideFlags: 0
@@ -7364,37 +7331,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -50.051, z: 0}
---- !u!1 &1842136232
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1842136233}
-  m_Layer: 0
-  m_Name: GrandmaCarPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1842136233
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1842136232}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.083, y: 1.606, z: -0.394}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1493120761}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1887933891
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7477,7 +7413,7 @@ GameObject:
   - component: {fileID: 1905274883}
   - component: {fileID: 1905274882}
   - component: {fileID: 1905274881}
-  - component: {fileID: 1905274886}
+  - component: {fileID: 1905274880}
   m_Layer: 0
   m_Name: cama
   m_TagString: Untagged
@@ -7485,6 +7421,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1905274880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905274879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccc05895da34eef418fd0f80cbe3e1f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SleepTransition
+  fadeImage: {fileID: 1411563554}
 --- !u!65 &1905274881
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7598,18 +7547,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 8.896, z: 0}
---- !u!114 &1905274886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1905274879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47f0e08dda1f35b49911e473df7ed450, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BedSleep
 --- !u!1 &2032942296
 GameObject:
   m_ObjectHideFlags: 0
@@ -8099,4 +8036,4 @@ SceneRoots:
   - {fileID: 1294452145}
   - {fileID: 1905274885}
   - {fileID: 69357794}
-  - {fileID: 1806468559}
+  - {fileID: 1484101071}

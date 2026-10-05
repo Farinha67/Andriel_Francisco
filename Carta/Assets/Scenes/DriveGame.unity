@@ -1534,7 +1534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 960b890dd904e334db7bcd624c5a2168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NaxtStages
-  cenaParaCarregar: Final
+  cenaParaCarregar: CutScene
 --- !u!65 &2046150158
 BoxCollider:
   m_ObjectHideFlags: 0

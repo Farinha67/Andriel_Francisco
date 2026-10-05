@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 102c3f2cfdcb3d64199f97f4f9aa3d46, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -603,6 +603,7 @@ MonoBehaviour:
   distanciaInteracao: 4
   teclaInteracao: 102
   playerMovement: {fileID: 916403552}
+  interactionF: {fileID: 0}
 --- !u!1 &1222028135
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,12 +719,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1db8ebc7c12ff1b489c43f7acfdb2237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarController
-  velocidade: 15
+  forcaMotor: 25
+  velocidadeMaxima: 20
   velocidadeRotacao: 100
+  freio: 5
+  massa: 1200
+  drag: 0.2
+  angularDrag: 3
+  camadaTerreno:
+    serializedVersion: 2
+    m_Bits: 0
+  distanciaChao: 1.5
   cameraCarro: {fileID: 610244828}
   exitPoint: {fileID: 453867248}
   audioMotor: {fileID: 1280121078}
-  tempoParaResetar: 25
 --- !u!82 &1280121078
 AudioSource:
   m_ObjectHideFlags: 0

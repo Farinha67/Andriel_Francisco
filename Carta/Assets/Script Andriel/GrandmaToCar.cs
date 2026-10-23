@@ -122,4 +122,4 @@ public class GrandmaToCar : MonoBehaviour
 
         Debug.Log("Vó entrou no carro! Tapete apareceu.");
     }
-}
+}   

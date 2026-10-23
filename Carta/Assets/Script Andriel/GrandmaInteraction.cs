@@ -1,164 +1,81 @@
+
 using UnityEngine;
 using System.Collections;
 
 public class GrandmaInteraction : MonoBehaviour
 {
-    [Header("VÓ")]
-    public GrandmaToCar grandma;
-
-    [Header("PLAYER")]
     public Transform player;
-
-    [Header("DISTÂNCIA PARA CONVERSAR")]
     public float distanciaInteracao = 3f;
 
-    private bool conversou = false;
-    private bool conversando = false;
-    private bool jogadorPerto = false;
+    private bool jogadorPerto;
+    private bool conversando;
+    private bool conversaTerminada;
 
     void Start()
     {
         if (player == null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            GameObject obj = GameObject.FindGameObjectWithTag("Player");
 
-            if (playerObj != null)
-            {
-                player = playerObj.transform;
-            }
-            else
-            {
-                Debug.LogError(
-                    "GrandmaInteraction: Não encontrei o Player. Verifique se ele tem a Tag 'Player'."
-                );
-            }
+            if (obj != null)
+                player = obj.transform;
         }
     }
 
     void Update()
     {
-        if (player == null)
+        if (player == null || Scene1Manager.Instance == null)
             return;
 
-        if (conversou || conversando)
-            return;
+        jogadorPerto =
+            Vector3.Distance(player.position, transform.position)
+            <= distanciaInteracao;
 
-        if (Scene1Manager.Instance == null)
-            return;
-
-        if (!Scene1Manager.Instance.PodeFalarComAvo())
-            return;
-
-        float distancia = Vector3.Distance(
-            player.position,
-            transform.position
-        );
-
-        jogadorPerto = distancia <= distanciaInteracao;
-
-        if (jogadorPerto && Input.GetKeyDown(KeyCode.E))
+        if (jogadorPerto &&
+            Input.GetKeyDown(KeyCode.E) &&
+            Scene1Manager.Instance.PodeFalarComAvo() &&
+            !conversando &&
+            !conversaTerminada)
         {
-            conversando = true;
-
-            StartCoroutine(Conversar());
+            StartCoroutine(IniciarConversa());
         }
     }
 
-    // =========================================================
-    // MOSTRA [E] NA TELA
-    // =========================================================
+    IEnumerator IniciarConversa()
+    {
+        conversando = true;
+
+        yield return StartCoroutine(
+            Scene1Manager.Instance.ConversaComAvo()
+        );
+
+        conversaTerminada = true;
+        conversando = false;
+    }
 
     void OnGUI()
     {
-        if (!jogadorPerto)
+        if (!jogadorPerto || conversando || conversaTerminada)
             return;
 
-        if (conversou || conversando)
-            return;
-
-        if (Scene1Manager.Instance == null)
-            return;
-
-        if (!Scene1Manager.Instance.PodeFalarComAvo())
+        if (Scene1Manager.Instance == null ||
+            !Scene1Manager.Instance.PodeFalarComAvo())
             return;
 
         GUIStyle estilo = new GUIStyle(GUI.skin.label);
-
-        estilo.fontSize = 28;
+        estilo.fontSize = 24;
         estilo.alignment = TextAnchor.MiddleCenter;
         estilo.normal.textColor = Color.white;
 
         GUI.Label(
             new Rect(
-                Screen.width / 2 - 250,
-                Screen.height - 140,
-                500,
-                60
+                Screen.width / 2 - 200,
+                Screen.height - 120,
+                400,
+                50
             ),
-            "[E] Falar com a vó",
+            "Aperte E para falar com a vó",
             estilo
         );
-    }
-
-    // =========================================================
-    // CONVERSA
-    // =========================================================
-
-    IEnumerator Conversar()
-    {
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Neto: Vó, o carro já está cheio."
-            )
-        );
-
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Vó: Então vamos viajar!"
-            )
-        );
-
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Neto: Mas... onde você vai?"
-            )
-        );
-
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Vó: Vou em cima do carro."
-            )
-        );
-
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Neto: Em cima do carro?!"
-            )
-        );
-
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Vó: Sim. Vou enrolada naquele tapete."
-            )
-        );
-
-        yield return StartCoroutine(
-            Scene1Manager.Instance.Falar(
-                "Neto: Você só pode estar brincando..."
-            )
-        );
-
-        conversou = true;
-
-        if (grandma != null)
-        {
-            grandma.IrAteCarro();
-        }
-        else
-        {
-            Debug.LogError(
-                "GrandmaInteraction: O campo Grandma está vazio!"
-            );
-        }
     }
 }

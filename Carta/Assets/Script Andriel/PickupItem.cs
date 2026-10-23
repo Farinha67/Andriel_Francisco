@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class PickupItem : MonoBehaviour
@@ -6,6 +7,15 @@ public class PickupItem : MonoBehaviour
     public float pickupRange = 5f;
 
     private GameObject heldItem;
+
+    public bool EstaSegurando(GameObject objeto)
+    {
+        if (heldItem == null || objeto == null)
+            return false;
+
+        return objeto == heldItem ||
+               objeto.transform.IsChildOf(heldItem.transform);
+    }
 
     void Update()
     {
@@ -20,6 +30,12 @@ public class PickupItem : MonoBehaviour
 
     void TryPickup()
     {
+        if (handPoint == null)
+        {
+            Debug.LogError("PickupItem: atribua o Hand Point no Inspector.");
+            return;
+        }
+
         RaycastHit hit;
 
         if (Physics.Raycast(
@@ -30,16 +46,23 @@ public class PickupItem : MonoBehaviour
         {
             if (hit.collider.CompareTag("Pickup"))
             {
-                heldItem = hit.collider.gameObject;
+                // Pega o objeto principal da caixa, se houver Rigidbody.
+                Rigidbody rb = hit.collider.attachedRigidbody;
 
-                Rigidbody rb = heldItem.GetComponent<Rigidbody>();
+                heldItem = rb != null
+                    ? rb.gameObject
+                    : hit.collider.gameObject;
 
                 if (rb != null)
+                {
                     rb.isKinematic = true;
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
 
-                heldItem.transform.position = handPoint.position;
-
-                heldItem.transform.parent = handPoint;
+                heldItem.transform.SetParent(handPoint);
+                heldItem.transform.localPosition = Vector3.zero;
+                heldItem.transform.localRotation = Quaternion.identity;
             }
         }
     }
@@ -49,9 +72,10 @@ public class PickupItem : MonoBehaviour
         if (heldItem == null)
             return;
 
-        Rigidbody rb = heldItem.GetComponent<Rigidbody>();
+        GameObject caixa = heldItem;
+        Rigidbody rb = caixa.GetComponent<Rigidbody>();
 
-        heldItem.transform.parent = null;
+        caixa.transform.SetParent(null);
 
         if (rb != null)
             rb.isKinematic = false;

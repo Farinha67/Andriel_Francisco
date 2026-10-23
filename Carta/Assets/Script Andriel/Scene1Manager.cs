@@ -1,4 +1,6 @@
+
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
@@ -7,382 +9,271 @@ public class Scene1Manager : MonoBehaviour
 {
     public static Scene1Manager Instance;
 
-    [Header("CAIXAS")]
-    public int caixasNecessarias = 5;
-
-    private int caixasColocadas = 0;
-
-    [Header("VÓ")]
+    [Header("Vó e tapete")]
     public GrandmaToCar grandma;
 
-    [Header("TAPETE")]
-    public GameObject tapetePrefab;
-    public Transform pontoTapete;
-
-    [Header("PRÓXIMA CENA")]
+    [Header("Próxima cena")]
     public string proximaCena = "Cena2";
+    public float tempoTelaPreta = 5f;
 
-    private bool caixasCompletas = false;
-    private bool avoTerminou = false;
-    private bool podeDormir = false;
+    private int caixas = 0;
+    private bool conversaLiberada = false;
+    private bool conversaIniciada = false;
+    private bool descansoLiberado = false;
     private bool dormindo = false;
 
     private Canvas canvas;
-    private TextMeshProUGUI dialogueText;
-    private TextMeshProUGUI objectiveText;
-    private GameObject dialoguePanel;
+    private TextMeshProUGUI objetivoText;
+    private TextMeshProUGUI dialogoText;
+    private GameObject painelDialogo;
+    private Image fadeImage;
+
+    public bool PodeFalarComAvo()
+    {
+        return conversaLiberada && !conversaIniciada;
+    }
+
+    public bool PodeDescansar()
+    {
+        return descansoLiberado && !dormindo;
+    }
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        CriarInterface();
     }
 
     void Start()
     {
-        CriarInterface();
-
-        objectiveText.text =
-            "Coloque as caixas no carro: 0/" + caixasNecessarias;
+        AtualizarObjetivo("Coloque as caixas no carro: 0/5");
     }
-
-    // =========================================================
-    // INTERFACE
-    // =========================================================
 
     void CriarInterface()
     {
-        GameObject canvasObj = new GameObject("Canvas_Dinamico");
-
+        GameObject canvasObj = new GameObject("InterfaceCena1");
         canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasObj.AddComponent<CanvasScaler>();
+        canvasObj.AddComponent<GraphicRaycaster>();
 
-        UnityEngine.UI.CanvasScaler scaler =
-            canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
-
-        scaler.uiScaleMode =
-            UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-
+        CanvasScaler scaler = canvasObj.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
 
-        canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-
-        // PAINEL DO DIÁLOGO
-
-        dialoguePanel = new GameObject("DialoguePanel");
-
-        dialoguePanel.transform.SetParent(
-            canvasObj.transform,
-            false
+        // Objetivo no canto superior esquerdo
+        GameObject objetivoObj = CriarTexto(
+            "Objetivo", canvas.transform, 30,
+            TextAlignmentOptions.TopLeft
         );
 
-        UnityEngine.UI.Image panelImage =
-            dialoguePanel.AddComponent<UnityEngine.UI.Image>();
+        RectTransform objetivoRect =
+            objetivoObj.GetComponent<RectTransform>();
 
-        panelImage.color =
-            new Color(0, 0, 0, 0.75f);
+        objetivoRect.anchorMin = new Vector2(0, 1);
+        objetivoRect.anchorMax = new Vector2(0, 1);
+        objetivoRect.pivot = new Vector2(0, 1);
+        objetivoRect.anchoredPosition = new Vector2(35, -30);
+        objetivoRect.sizeDelta = new Vector2(850, 120);
 
-        RectTransform panelRect =
-            dialoguePanel.GetComponent<RectTransform>();
+        objetivoText = objetivoObj.GetComponent<TextMeshProUGUI>();
 
-        panelRect.anchorMin =
-            new Vector2(0.05f, 0.05f);
+        // Painel de diálogo na parte inferior
+        painelDialogo = new GameObject("PainelDialogo");
+        painelDialogo.transform.SetParent(canvas.transform, false);
 
-        panelRect.anchorMax =
-            new Vector2(0.95f, 0.22f);
+        Image painelImagem = painelDialogo.AddComponent<Image>();
+        painelImagem.color = new Color(0, 0, 0, 0.8f);
 
-        panelRect.offsetMin = Vector2.zero;
-        panelRect.offsetMax = Vector2.zero;
+        RectTransform painelRect =
+            painelDialogo.GetComponent<RectTransform>();
 
-        // TEXTO DO DIÁLOGO
+        painelRect.anchorMin = new Vector2(0.05f, 0.04f);
+        painelRect.anchorMax = new Vector2(0.95f, 0.24f);
+        painelRect.offsetMin = Vector2.zero;
+        painelRect.offsetMax = Vector2.zero;
 
-        GameObject textObj =
-            new GameObject("DialogueText");
-
-        textObj.transform.SetParent(
-            dialoguePanel.transform,
-            false
+        GameObject dialogoObj = CriarTexto(
+            "TextoDialogo", painelDialogo.transform, 28,
+            TextAlignmentOptions.Center
         );
 
-        dialogueText =
-            textObj.AddComponent<TextMeshProUGUI>();
+        RectTransform dialogoRect =
+            dialogoObj.GetComponent<RectTransform>();
 
-        dialogueText.fontSize = 28;
-        dialogueText.alignment =
-            TextAlignmentOptions.Center;
+        dialogoRect.anchorMin = Vector2.zero;
+        dialogoRect.anchorMax = Vector2.one;
+        dialogoRect.offsetMin = new Vector2(25, 15);
+        dialogoRect.offsetMax = new Vector2(-25, -15);
 
-        dialogueText.color = Color.white;
+        dialogoText = dialogoObj.GetComponent<TextMeshProUGUI>();
+        painelDialogo.SetActive(false);
 
-        RectTransform textRect =
-            dialogueText.GetComponent<RectTransform>();
+        // Tela preta para dormir
+        GameObject fadeObj = new GameObject("FadeTela");
+        fadeObj.transform.SetParent(canvas.transform, false);
 
-        textRect.anchorMin =
-            new Vector2(0.05f, 0.1f);
+        fadeImage = fadeObj.AddComponent<Image>();
+        fadeImage.color = new Color(0, 0, 0, 0);
+        fadeImage.raycastTarget = false;
 
-        textRect.anchorMax =
-            new Vector2(0.95f, 0.9f);
+        RectTransform fadeRect = fadeObj.GetComponent<RectTransform>();
+        fadeRect.anchorMin = Vector2.zero;
+        fadeRect.anchorMax = Vector2.one;
+        fadeRect.offsetMin = Vector2.zero;
+        fadeRect.offsetMax = Vector2.zero;
 
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
-
-        dialoguePanel.SetActive(false);
-
-        // OBJETIVO
-
-        GameObject objectiveObj =
-            new GameObject("ObjectiveText");
-
-        objectiveObj.transform.SetParent(
-            canvasObj.transform,
-            false
-        );
-
-        objectiveText =
-            objectiveObj.AddComponent<TextMeshProUGUI>();
-
-        objectiveText.fontSize = 25;
-        objectiveText.alignment =
-            TextAlignmentOptions.TopLeft;
-
-        objectiveText.color = Color.white;
-
-        RectTransform objectiveRect =
-            objectiveText.GetComponent<RectTransform>();
-
-        objectiveRect.anchorMin =
-            new Vector2(0.03f, 0.88f);
-
-        objectiveRect.anchorMax =
-            new Vector2(0.6f, 0.98f);
-
-        objectiveRect.offsetMin = Vector2.zero;
-        objectiveRect.offsetMax = Vector2.zero;
+        fadeObj.transform.SetAsLastSibling();
     }
 
-    // =========================================================
-    // CAIXAS
-    // =========================================================
+    GameObject CriarTexto(
+        string nome,
+        Transform pai,
+        int tamanho,
+        TextAlignmentOptions alinhamento)
+    {
+        GameObject obj = new GameObject(nome);
+        obj.transform.SetParent(pai, false);
+
+        TextMeshProUGUI texto = obj.AddComponent<TextMeshProUGUI>();
+        texto.fontSize = tamanho;
+        texto.color = Color.white;
+        texto.alignment = alinhamento;
+        texto.textWrappingMode = TextWrappingModes.Normal;
+        texto.raycastTarget = false;
+
+        return obj;
+    }
+
+    void AtualizarObjetivo(string texto)
+    {
+        if (objetivoText != null)
+            objetivoText.text = texto;
+    }
 
     public void CaixaColocada()
     {
-        if (caixasCompletas)
+        if (conversaLiberada || caixas >= 5)
             return;
 
-        caixasColocadas++;
+        caixas = Mathf.Min(caixas + 1, 5);
 
-        if (caixasColocadas > caixasNecessarias)
-            caixasColocadas = caixasNecessarias;
+        AtualizarObjetivo(
+            caixas < 5
+            ? "Coloque as caixas no carro: " + caixas + "/5"
+            : "Vá falar com sua vó. Aproxime-se e aperte E."
+        );
 
-        objectiveText.text =
-            "Coloque as caixas no carro: " +
-            caixasColocadas +
-            "/" +
-            caixasNecessarias;
+        if (caixas >= 5)
+            conversaLiberada = true;
+    }
 
-        if (caixasColocadas >= caixasNecessarias)
+    public IEnumerator Falar(string mensagem)
+    {
+        painelDialogo.SetActive(true);
+        dialogoText.text = mensagem;
+
+        // Cada fala avança sozinha.
+        yield return new WaitForSeconds(2.5f);
+    }
+
+    public IEnumerator ConversaComAvo()
+    {
+        if (!PodeFalarComAvo())
+            yield break;
+
+        conversaIniciada = true;
+
+        yield return Falar("Neto: Vó, terminei de colocar as caixas no carro.");
+        yield return Falar("Vó: Muito bem, meu filho!");
+        yield return Falar("Neto: E como a senhora vai viajar?");
+        yield return Falar("Vó: Vou enrolada naquele tapete, em cima do carro!");
+        yield return Falar("Neto: A senhora só pode estar brincando...");
+        yield return Falar("Vó: Anda logo, menino!");
+
+        painelDialogo.SetActive(false);
+
+        if (grandma != null)
         {
-            caixasCompletas = true;
-
-            StartCoroutine(
-                DialogoDepoisDasCaixas()
-            );
+            grandma.IrAteCarro();
+        }
+        else
+        {
+            Debug.LogError("Arraste a Grandma no campo Grandma do Scene1Manager.");
         }
     }
 
-    IEnumerator DialogoDepoisDasCaixas()
+    public void AvoChegouAoCarro()
     {
-        yield return new WaitForSeconds(1f);
-
-        yield return StartCoroutine(
-            Falar(
-                "Todas as caixas estão prontas."
-            )
-        );
-
-        yield return StartCoroutine(
-            Falar(
-                "Preciso falar com a vó antes de sair."
-            )
-        );
-
-        objectiveText.text =
-            "Vá falar com sua vó.";
+        StartCoroutine(SequenciaDescanso());
     }
 
-    // =========================================================
-    // PODE FALAR COM A VÓ?
-    // =========================================================
-
-    public bool PodeFalarComAvo()
+    IEnumerator SequenciaDescanso()
     {
-        return caixasCompletas &&
-               !avoTerminou &&
-               !dormindo;
+        yield return Falar("Pronto. Agora está tudo preparado para a viagem.");
+        yield return Falar("Estou cansado... o dia foi cheio demais.");
+        yield return Falar("Vou dormir um pouco antes de partir.");
+
+        painelDialogo.SetActive(false);
+
+        descansoLiberado = true;
+        AtualizarObjetivo("Vá até a cama e aperte E para dormir.");
     }
 
-    // =========================================================
-    // DIÁLOGO
-    // =========================================================
-
-    public IEnumerator Falar(
-        string texto,
-        float tempo = 2.5f
-    )
+    public void IniciarSono()
     {
-        dialoguePanel.SetActive(true);
-
-        dialogueText.text = texto;
-
-        yield return new WaitForSeconds(tempo);
-
-        dialoguePanel.SetActive(false);
-    }
-
-    // =========================================================
-    // VÓ CHEGOU NO CARRO
-    // =========================================================
-
-    public void AvoChegouNoCarro()
-    {
-        if (avoTerminou)
-            return;
-
-        avoTerminou = true;
-
-        StartCoroutine(
-            FinalizarParteDaAvo()
-        );
-    }
-
-    IEnumerator FinalizarParteDaAvo()
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        // CRIA O TAPETE
-
-        if (tapetePrefab != null &&
-            pontoTapete != null)
-        {
-            Instantiate(
-                tapetePrefab,
-                pontoTapete.position,
-                pontoTapete.rotation
-            );
-        }
-
-        yield return StartCoroutine(
-            Falar(
-                "Neto: Pronto... agora sim."
-            )
-        );
-
-        yield return StartCoroutine(
-            Falar(
-                "Estou cansado. O dia foi cheio demais."
-            )
-        );
-
-        yield return StartCoroutine(
-            Falar(
-                "Vou descansar um pouco."
-            )
-        );
-
-        objectiveText.text =
-            "Vá até a cama descansar.";
-
-        podeDormir = true;
-    }
-
-    // =========================================================
-    // DORMIR
-    // =========================================================
-
-    public bool PodeDormir()
-    {
-        return podeDormir;
-    }
-
-    public void Dormir()
-    {
-        if (dormindo)
+        if (!PodeDescansar())
             return;
 
         dormindo = true;
-
-        StartCoroutine(
-            DormirCoroutine()
-        );
+        StartCoroutine(DormirETrocarCena());
     }
 
-    IEnumerator DormirCoroutine()
+    IEnumerator DormirETrocarCena()
     {
-        objectiveText.text = "";
+        AtualizarObjetivo("");
+        painelDialogo.SetActive(false);
 
-        yield return StartCoroutine(
-            Falar(
-                "Vou dormir..."
-            )
-        );
+        // Escurece a tela suavemente.
+        float duracaoFade = 2f;
+        float tempo = 0f;
 
-        yield return StartCoroutine(
-            FadeParaPreto()
-        );
-
-        SceneManager.LoadScene(
-            proximaCena
-        );
-    }
-
-    // =========================================================
-    // FADE
-    // =========================================================
-
-    IEnumerator FadeParaPreto()
-    {
-        GameObject fadeObj =
-            new GameObject("Fade");
-
-        fadeObj.transform.SetParent(
-            canvas.transform,
-            false
-        );
-
-        UnityEngine.UI.Image image =
-            fadeObj.AddComponent<UnityEngine.UI.Image>();
-
-        image.color =
-            new Color(0, 0, 0, 0);
-
-        RectTransform rect =
-            fadeObj.GetComponent<RectTransform>();
-
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        Color cor = image.color;
-
-        // ESCURECER
-
-        for (
-            float alpha = 0;
-            alpha < 1f;
-            alpha += Time.deltaTime / 2f
-        )
+        while (tempo < duracaoFade)
         {
-            cor.a = alpha;
-            image.color = cor;
+            tempo += Time.deltaTime;
+
+            Color cor = fadeImage.color;
+            cor.a = Mathf.Clamp01(tempo / duracaoFade);
+            fadeImage.color = cor;
 
             yield return null;
         }
 
-        cor.a = 1f;
-        image.color = cor;
+        Color preta = fadeImage.color;
+        preta.a = 1f;
+        fadeImage.color = preta;
 
-        // 5 SEGUNDOS PRETO
+        // O jogador dorme por 5 segundos com a tela preta.
+        yield return new WaitForSeconds(tempoTelaPreta);
 
-        yield return new WaitForSeconds(5f);
+        if (Application.CanStreamedLevelBeLoaded(proximaCena))
+        {
+            SceneManager.LoadScene(proximaCena);
+        }
+        else
+        {
+            Debug.LogError(
+                "A cena '" + proximaCena +
+                "' não foi encontrada. Confira o nome e o Build Profiles."
+            );
+
+            dormindo = false;
+        }
     }
 }

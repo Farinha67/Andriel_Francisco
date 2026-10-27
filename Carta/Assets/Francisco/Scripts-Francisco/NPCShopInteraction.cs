@@ -62,7 +62,7 @@ public class NPCShopInteraction : MonoBehaviour
             }
         }
     }
-
+        
     public void AbrirLoja()
     {
         lojaAberta = true;

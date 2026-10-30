@@ -8,6 +8,10 @@ using System.Collections;
 public class Scene1Manager : MonoBehaviour
 {
     public static Scene1Manager Instance;
+    private bool missaoParafusosConcluida = false;
+
+    private int parafusosColetados = 0;
+    private int parafusosVendidos = 0;
 
     [Header("Vó e tapete")]
     public GrandmaToCar grandma;

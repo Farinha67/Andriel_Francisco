@@ -188,6 +188,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 035d640a1b531bc4d9f9f38293e0f12d, type: 3}
+--- !u!4 &49829998 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7910276571375375869, guid: cacf3f4f0889b364ea5d42072658acd4, type: 3}
+  m_PrefabInstance: {fileID: 847949388517599108}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &51134780
 GameObject:
   m_ObjectHideFlags: 0
@@ -7665,6 +7670,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7831884963363814148, guid: cacf3f4f0889b364ea5d42072658acd4, type: 3}
+      propertyPath: handPoint
+      value: 
+      objectReference: {fileID: 49829998}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7734,8 +7743,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Caixa_Andriel
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 6685946321032536055, guid: 035d640a1b531bc4d9f9f38293e0f12d, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -113,9 +113,6 @@ public class InteractionFeedback : MonoBehaviour
             promptNPC.SetActive(mostrar);
         }
 
-        if (mostrar && textoPrompt != null)
-        {
-            textoPrompt.text = "E - Conversar";
-        }
+        
     }
 }

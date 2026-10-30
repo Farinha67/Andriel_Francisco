@@ -18,7 +18,6 @@ public class PickupItem : MonoBehaviour
 
     void Awake()
     {
-        // Procura o HandPoint automaticamente.
         if (handPoint == null)
         {
             Transform[] objetos =
@@ -34,7 +33,6 @@ public class PickupItem : MonoBehaviour
             }
         }
 
-        // Procura a camera automaticamente.
         if (cameraTransform == null)
         {
             Camera cam = GetComponentInChildren<Camera>();
@@ -79,16 +77,10 @@ public class PickupItem : MonoBehaviour
         }
         else
         {
-            // Perto do carro: coloca a caixa.
             if (carDropZone != null &&
                 carDropZone.JogadorPerto())
             {
                 carDropZone.ColocarCaixa(this);
-            }
-            else
-            {
-                // Longe do carro: solta a caixa.
-                DropItem();
             }
         }
     }
@@ -100,7 +92,6 @@ public class PickupItem : MonoBehaviour
 
         RaycastHit hit;
 
-        // Detecta o objeto na direcao da camera.
         if (Physics.Raycast(
             cameraTransform.position,
             cameraTransform.forward,
@@ -114,7 +105,6 @@ public class PickupItem : MonoBehaviour
                 ? rbEncontrado.gameObject
                 : hit.collider.gameObject;
 
-            // Verifica a tag na caixa ou no objeto atingido.
             if (!objeto.CompareTag("Pickup") &&
                 !hit.collider.CompareTag("Pickup"))
                 return;
@@ -125,7 +115,6 @@ public class PickupItem : MonoBehaviour
             heldColliders =
                 heldItem.GetComponentsInChildren<Collider>();
 
-            // Desativa a fisica enquanto segura.
             if (heldRb != null)
             {
                 heldRb.linearVelocity = Vector3.zero;
@@ -134,13 +123,11 @@ public class PickupItem : MonoBehaviour
                 heldRb.useGravity = false;
             }
 
-            // Desativa os colliders para evitar conflitos.
             foreach (Collider col in heldColliders)
             {
                 col.enabled = false;
             }
 
-            // Coloca a caixa na mao do jogador.
             heldItem.transform.SetParent(handPoint);
             heldItem.transform.localPosition = Vector3.zero;
             heldItem.transform.localRotation = Quaternion.identity;
@@ -170,7 +157,6 @@ public class PickupItem : MonoBehaviour
 
         GameObject caixa = heldItem;
 
-        // Limpa as referencias antes de destruir.
         heldItem = null;
         heldRb = null;
         heldColliders = null;
@@ -178,45 +164,5 @@ public class PickupItem : MonoBehaviour
         Destroy(caixa);
 
         Debug.Log("Caixa colocada no carro!");
-    }
-
-    void DropItem()
-    {
-        if (heldItem == null)
-            return;
-
-        GameObject caixa = heldItem;
-
-        // Retira a caixa da mao.
-        caixa.transform.SetParent(null);
-
-        caixa.transform.position =
-            transform.position + transform.forward * 1.5f;
-
-        // Reativa os colliders.
-        if (heldColliders != null)
-        {
-            foreach (Collider col in heldColliders)
-            {
-                if (col != null)
-                    col.enabled = true;
-            }
-        }
-
-        // Reativa a fisica.
-        if (heldRb != null)
-        {
-            heldRb.isKinematic = false;
-            heldRb.useGravity = true;
-
-            heldRb.linearVelocity = Vector3.zero;
-            heldRb.angularVelocity = Vector3.zero;
-        }
-
-        heldItem = null;
-        heldRb = null;
-        heldColliders = null;
-
-        Debug.Log("Caixa solta!");
     }
 }

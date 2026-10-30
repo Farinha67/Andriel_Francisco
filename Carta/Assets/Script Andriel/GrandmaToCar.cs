@@ -67,14 +67,6 @@ public class GrandmaToCar : MonoBehaviour
 
         if (tapete != null)
         {
-            if (pontoTapete != null)
-            {
-                tapete.transform.SetPositionAndRotation(
-                    pontoTapete.position,
-                    pontoTapete.rotation
-                );
-            }
-
             tapete.SetActive(true);
         }
         else

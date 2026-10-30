@@ -3,10 +3,17 @@ using UnityEngine;
 
 public class GrandmaToCar : MonoBehaviour
 {
+    [Header("Referencias")]
     public Transform pontoCarro;
     public GameObject tapete;
     public Transform pontoTapete;
+
+    [Header("Movimentacao")]
     public float velocidade = 2f;
+
+    [Header("Animacao")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string parametroAndando = "Andando";
 
     private bool andando;
     private bool terminou;
@@ -18,6 +25,10 @@ public class GrandmaToCar : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         colliders = GetComponentsInChildren<Collider>();
+
+        // Procura o Animator automaticamente.
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
     }
 
     public void IrAteCarro()
@@ -32,6 +43,10 @@ public class GrandmaToCar : MonoBehaviour
         }
 
         andando = true;
+
+        // Inicia a animacao de caminhada.
+        if (animator != null)
+            animator.SetBool(parametroAndando, true);
 
         if (rb != null)
         {
@@ -64,6 +79,10 @@ public class GrandmaToCar : MonoBehaviour
         terminou = true;
 
         transform.position = pontoCarro.position;
+
+        // Volta para a animacao de parada.
+        if (animator != null)
+            animator.SetBool(parametroAndando, false);
 
         if (tapete != null)
         {

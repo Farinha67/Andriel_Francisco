@@ -1,93 +1,86 @@
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
-    private GameObject pausePanel;
+    [Header("Painel de Pause")]
+    [SerializeField] private GameObject pausePainel;
+
+    [Header("Configurações")]
+    [SerializeField] private KeyCode teclaPause = KeyCode.Escape;
+    [SerializeField] private bool iniciarPausado = false;
+
     private bool pausado = false;
 
     void Start()
     {
-        CriarPause();
+        pausado = iniciarPausado;
+
+        if (pausePainel != null)
+            pausePainel.SetActive(pausado);
+
+        AtualizarEstado();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(teclaPause))
         {
             AlternarPause();
         }
     }
 
-    void AlternarPause()
+    public void AlternarPause()
     {
         pausado = !pausado;
 
-        pausePanel.SetActive(pausado);
+        if (pausePainel != null)
+            pausePainel.SetActive(pausado);
 
-        if (pausado)
-        {
-            Time.timeScale = 0f;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        AtualizarEstado();
     }
 
-    void CriarPause()
+    public void Pausar()
     {
-        // CANVAS
-        GameObject canvasObj = new GameObject("PauseCanvas");
+        pausado = true;
 
-        Canvas canvas = canvasObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        if (pausePainel != null)
+            pausePainel.SetActive(true);
 
-        CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
+        AtualizarEstado();
+    }
 
-        canvasObj.AddComponent<GraphicRaycaster>();
+    public void Continuar()
+    {
+        pausado = false;
 
-        // PAINEL
-        pausePanel = new GameObject("PausePanel");
-        pausePanel.transform.SetParent(canvasObj.transform, false);
+        if (pausePainel != null)
+            pausePainel.SetActive(false);
 
-        Image panelImage = pausePanel.AddComponent<Image>();
-        panelImage.color = new Color(0f, 0f, 0f, 0.85f);
+        AtualizarEstado();
+    }
 
-        RectTransform panelRect = pausePanel.GetComponent<RectTransform>();
+    private void AtualizarEstado()
+    {
+        Time.timeScale = pausado ? 0f : 1f;
 
-        panelRect.anchorMin = Vector2.zero;
-        panelRect.anchorMax = Vector2.one;
+        Cursor.lockState = pausado
+            ? CursorLockMode.None
+            : CursorLockMode.Locked;
 
-        panelRect.offsetMin = Vector2.zero;
-        panelRect.offsetMax = Vector2.zero;
+        Cursor.visible = pausado;
+    }
 
-        // TEXTO
-        GameObject textoObj = new GameObject("PauseText");
-        textoObj.transform.SetParent(pausePanel.transform, false);
+    public void SairDoJogo()
+    {
+        Time.timeScale = 1f;
+        Application.Quit();
+    }
 
-        Text texto = textoObj.AddComponent<Text>();
-
-        texto.text = "PAUSADO\n\nESC para continuar";
-        texto.fontSize = 45;
-        texto.alignment = TextAnchor.MiddleCenter;
-        texto.color = Color.white;
-
-        RectTransform textoRect = textoObj.GetComponent<RectTransform>();
-
-        textoRect.anchorMin = Vector2.zero;
-        textoRect.anchorMax = Vector2.one;
-
-        textoRect.offsetMin = Vector2.zero;
-        textoRect.offsetMax = Vector2.zero;
-
-        pausePanel.SetActive(false);
+    public void VoltarAoMenuPrincipal()
+    {
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+        pausePainel.SetActive(false);
     }
 }

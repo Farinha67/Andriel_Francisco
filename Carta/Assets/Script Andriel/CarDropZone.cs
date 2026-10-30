@@ -1,45 +1,90 @@
 
 using UnityEngine;
-using System.Collections.Generic;
 
 public class CarDropZone : MonoBehaviour
 {
+    [Header("Referências")]
+    public Transform player;
+    public PickupItem pickupItem;
     public BoxCounter boxCounter;
 
-    private HashSet<GameObject> caixasContabilizadas = new HashSet<GameObject>();
+    [Header("Configurações")]
+    public float distanciaInteracao = 4f;
+    public int maxCaixas = 5;
 
-    private void OnTriggerEnter(Collider other)
+    private int caixasColocadas = 0;
+
+    void Start()
     {
-        if (!other.CompareTag("Pickup"))
-            return;
-
-        // Não aceita caixas que ainda estão sendo seguradas.
-        PickupItem jogador = FindFirstObjectByType<PickupItem>();
-
-        if (jogador != null && jogador.EstaSegurando(other.gameObject))
-            return;
-
-        // Impede contar a mesma caixa mais de uma vez.
-        GameObject caixa = other.attachedRigidbody != null
-            ? other.attachedRigidbody.gameObject
-            : other.gameObject;
-
-        if (caixasContabilizadas.Contains(caixa))
-            return;
-
-        if (boxCounter == null || Scene1Manager.Instance == null)
+        if (player == null)
         {
-            Debug.LogError(
-                "CarDropZone: atribua BoxCounter e confira o Scene1Manager."
-            );
-            return;
+            GameObject obj = GameObject.FindGameObjectWithTag("Player");
+
+            if (obj != null)
+                player = obj.transform;
         }
 
-        caixasContabilizadas.Add(caixa);
+        if (pickupItem == null && player != null)
+            pickupItem = player.GetComponent<PickupItem>();
+    }
 
-        boxCounter.AddBox();
-        Scene1Manager.Instance.CaixaColocada();
+    public bool JogadorPerto()
+    {
+        if (player == null)
+            return false;
 
-        Destroy(caixa);
+        return Vector3.Distance(player.position, transform.position)
+            <= distanciaInteracao;
+    }
+
+    public void ColocarCaixa(PickupItem jogador)
+    {
+        if (caixasColocadas >= maxCaixas)
+            return;
+
+        if (jogador == null || !jogador.TemCaixa())
+            return;
+
+        jogador.DepositarCaixa();
+
+        caixasColocadas++;
+
+        if (boxCounter != null)
+            boxCounter.AddBox();
+
+        if (Scene1Manager.Instance != null)
+            Scene1Manager.Instance.CaixaColocada();
+
+        Debug.Log("Caixas colocadas: " + caixasColocadas + "/" + maxCaixas);
+    }
+
+    void OnGUI()
+    {
+        if (!JogadorPerto())
+            return;
+
+        if (pickupItem == null || !pickupItem.TemCaixa())
+            return;
+
+        if (caixasColocadas >= maxCaixas)
+            return;
+
+        GUIStyle estilo = new GUIStyle(GUI.skin.label);
+
+        estilo.fontSize = 25;
+        estilo.alignment = TextAnchor.MiddleCenter;
+        estilo.normal.textColor = Color.white;
+        estilo.fontStyle = FontStyle.Bold;
+
+        GUI.Label(
+            new Rect(
+                Screen.width / 2 - 300,
+                Screen.height - 150,
+                600,
+                50
+            ),
+            "APERTE E PARA COLOCAR A CAIXA NO CARRO",
+            estilo
+        );
     }
 }

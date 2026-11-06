@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Final.unity
     guid: 11c6addc2871da148b92e57b55b58332
+  - enabled: 1
+    path: Assets/Scenes/InterrogatorioFinal.unity
+    guid: a6867b4188e89a448a197513c3ff248b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

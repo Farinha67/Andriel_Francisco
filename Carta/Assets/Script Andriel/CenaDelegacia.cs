@@ -1,27 +1,36 @@
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class CenaDelegacia : MonoBehaviour
 {
     [Header("JOGADOR")]
     public Transform jogador;
-    public float distanciaInteracao = 3f;
 
     [Header("OFICIAL")]
     public Transform oficial;
+    public float distanciaInteracao = 3f;
 
-    [Header("CARRO DA POLICIA")]
+    [Header("VIATURA")]
     public GameObject carroPolicia;
     public Transform pontoChegada;
+    public Transform pontoEntradaCarro;
     public float velocidadeCarro = 8f;
+    public float distanciaCarro = 3f;
 
-    [Header("PRISAO")]
-    public Transform pontoPrisao;
-    public float duracaoFade = 2f;
+    [Header("PROXIMA CENA")]
+    public string nomeCenaInterrogatorio = "Interrogatorio";
+    public float duracaoFade = 4f;
 
-    private bool podeConversar;
+    [Header("DIALOGOS")]
+    public float tempoDialogo = 3f;
+
     private bool conversando;
+    private bool dialogoConcluido;
+    private bool aguardandoEntrada;
+    private bool podeConversar;
+    private bool podeEntrar;
     private bool fim;
 
     private string mensagemObjetivo =
@@ -29,7 +38,7 @@ public class CenaDelegacia : MonoBehaviour
 
     private string mensagemDialogo = "";
 
-    private float fadeAlpha = 0f;
+    private float fadeAlpha;
 
     private GUIStyle estilo;
 
@@ -41,23 +50,71 @@ public class CenaDelegacia : MonoBehaviour
 
     void Update()
     {
-        if (jogador == null || oficial == null)
+        if (jogador == null || fim)
             return;
 
-        if (conversando || fim)
-            return;
+        // NÃO PERMITE FALAR COM O OFICIAL NOVAMENTE
 
-        float distancia = Vector3.Distance(
-            jogador.position,
-            oficial.position
-        );
-
-        podeConversar = distancia <= distanciaInteracao;
-
-        if (podeConversar && Input.GetKeyDown(KeyCode.E))
+        if (!dialogoConcluido && !conversando &&
+            !aguardandoEntrada && oficial != null)
         {
-            StartCoroutine(SequenciaDelegacia());
+            float distancia = DistanciaHorizontal(
+                jogador.position,
+                oficial.position
+            );
+
+            podeConversar = distancia <= distanciaInteracao;
+
+            if (podeConversar && Input.GetKeyDown(KeyCode.E))
+            {
+                dialogoConcluido = true;
+                podeConversar = false;
+
+                StartCoroutine(SequenciaDelegacia());
+            }
         }
+        else
+        {
+            podeConversar = false;
+        }
+
+        // INTERAÇÃO COM A VIATURA
+
+        if (aguardandoEntrada && !conversando)
+        {
+            Transform alvo = pontoEntradaCarro != null
+                ? pontoEntradaCarro
+                : carroPolicia != null
+                    ? carroPolicia.transform
+                    : null;
+
+            if (alvo != null)
+            {
+                float distancia = DistanciaHorizontal(
+                    jogador.position,
+                    alvo.position
+                );
+
+                podeEntrar = distancia <= distanciaCarro;
+
+                if (podeEntrar && Input.GetKeyDown(KeyCode.E))
+                {
+                    StartCoroutine(EntrarNaViatura());
+                }
+            }
+        }
+        else
+        {
+            podeEntrar = false;
+        }
+    }
+
+    float DistanciaHorizontal(Vector3 a, Vector3 b)
+    {
+        a.y = 0;
+        b.y = 0;
+
+        return Vector3.Distance(a, b);
     }
 
     IEnumerator SequenciaDelegacia()
@@ -65,19 +122,36 @@ public class CenaDelegacia : MonoBehaviour
         conversando = true;
         mensagemObjetivo = "";
 
-        mensagemDialogo = "Jogador: Preciso do meu carro de volta.";
-        yield return new WaitForSeconds(3f);
+        mensagemDialogo = "Oficial: Encontramos seu carro.";
+        yield return new WaitForSeconds(tempoDialogo);
 
         mensagemDialogo =
-            "Oficial: Estamos fazendo a última revista no veículo.";
+            "Oficial: Mas precisamos conversar sobre uma coisa.";
+        yield return new WaitForSeconds(tempoDialogo);
+
+        mensagemDialogo =
+            "Oficial: Sua avó foi encontrada morta, enrolada em um tapete que estava sobre seu veículo.";
+        yield return new WaitForSeconds(5f);
+
+        mensagemDialogo =
+            "Jogador: O QUÊ?! Eu não sabia de nada!";
+        yield return new WaitForSeconds(tempoDialogo);
+
+        mensagemDialogo =
+            "Oficial: Precisamos entender o que aconteceu.";
+        yield return new WaitForSeconds(tempoDialogo);
+
+        mensagemDialogo =
+            "Oficial: Me acompanhe até a delegacia. Precisamos fazer algumas perguntas.";
         yield return new WaitForSeconds(4f);
 
-        mensagemDialogo = "Jogador: OK...";
-        yield return new WaitForSeconds(2f);
+        mensagemDialogo =
+            "Oficial: Entre na viatura, por favor.";
+        yield return new WaitForSeconds(3f);
 
         mensagemDialogo = "";
 
-        // CHEGADA DO CARRO
+        // CHEGADA DA VIATURA
 
         if (carroPolicia != null)
         {
@@ -85,7 +159,7 @@ public class CenaDelegacia : MonoBehaviour
 
             if (pontoChegada != null)
             {
-                while (Vector3.Distance(
+                while (DistanciaHorizontal(
                     carroPolicia.transform.position,
                     pontoChegada.position) > 0.2f)
                 {
@@ -120,52 +194,32 @@ public class CenaDelegacia : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(1.5f);
+        // AGUARDAR O JOGADOR
 
-        mensagemDialogo =
-            "Policial: Você está preso por homicídio culposo!";
+        mensagemObjetivo = "Entre na viatura policial.";
 
-        yield return new WaitForSeconds(4f);
+        conversando = false;
+        aguardandoEntrada = true;
+    }
 
-        mensagemDialogo = "";
+    IEnumerator EntrarNaViatura()
+    {
+        conversando = true;
+        aguardandoEntrada = false;
+        podeEntrar = false;
 
-        // FADE OUT
+        mensagemObjetivo = "";
+        mensagemDialogo = "Indo para a delegacia...";
+
+        yield return new WaitForSeconds(1f);
+
+        // FADE DE 4 SEGUNDOS
 
         yield return StartCoroutine(Fade(1f));
 
-        // TELETRANSPORTE PARA A PRISAO
-
-        if (pontoPrisao != null && jogador != null)
-        {
-            CharacterController controle =
-                jogador.GetComponent<CharacterController>();
-
-            if (controle != null)
-                controle.enabled = false;
-
-            jogador.SetPositionAndRotation(
-                pontoPrisao.position,
-                pontoPrisao.rotation
-            );
-
-            if (controle != null)
-                controle.enabled = true;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        // FADE IN
-
-        yield return StartCoroutine(Fade(0f));
-
-        mensagemDialogo =
-            "Jogador: Acabou... Eu sabia que poderia acontecer isso...";
-
-        yield return new WaitForSeconds(5f);
-
-        mensagemDialogo = "FIM";
-
         fim = true;
+
+        SceneManager.LoadScene(nomeCenaInterrogatorio);
     }
 
     IEnumerator Fade(float destino)
@@ -201,43 +255,56 @@ public class CenaDelegacia : MonoBehaviour
             estilo.wordWrap = true;
         }
 
-        if (!string.IsNullOrEmpty(mensagemObjetivo))
-        {
-            GUI.Box(new Rect(
-                Screen.width / 2 - 300,
-                Screen.height - 100, 600, 55), "");
+        string textoTela = "";
 
-            GUI.Label(new Rect(
-                Screen.width / 2 - 300,
-                Screen.height - 100, 600, 55),
-                mensagemObjetivo, estilo);
-        }
-
-        if (podeConversar && !conversando && !fim)
-        {
-            GUI.Box(new Rect(
-                Screen.width / 2 - 250,
-                Screen.height - 100, 500, 55), "");
-
-            GUI.Label(new Rect(
-                Screen.width / 2 - 250,
-                Screen.height - 100, 500, 55),
-                "Aperte E para falar com um oficial", estilo);
-        }
+        // PRIORIDADE DAS MENSAGENS
 
         if (!string.IsNullOrEmpty(mensagemDialogo))
         {
-            GUI.Box(new Rect(
-                Screen.width / 2 - 400,
-                Screen.height - 130, 800, 90), "");
-
-            GUI.Label(new Rect(
-                Screen.width / 2 - 390,
-                Screen.height - 125, 780, 80),
-                mensagemDialogo, estilo);
+            textoTela = mensagemDialogo;
+        }
+        else if (aguardandoEntrada)
+        {
+            if (podeEntrar)
+                textoTela = "Aperte E para entrar na viatura";
+            else
+                textoTela = "Vá até a viatura policial.";
+        }
+        else if (podeConversar && !dialogoConcluido)
+        {
+            textoTela = "Aperte E para falar com um oficial";
+        }
+        else if (!dialogoConcluido && !conversando)
+        {
+            textoTela = mensagemObjetivo;
         }
 
-        // TELA PRETA
+        // MOSTRAR APENAS UMA MENSAGEM
+
+        if (!string.IsNullOrEmpty(textoTela))
+        {
+            GUI.Box(
+                new Rect(
+                    Screen.width / 2 - 400,
+                    Screen.height - 130,
+                    800,
+                    90
+                ), ""
+            );
+
+            GUI.Label(
+                new Rect(
+                    Screen.width / 2 - 390,
+                    Screen.height - 125,
+                    780,
+                    80
+                ),
+                textoTela,
+                estilo
+            );
+        }
+
+        // FADE PRETO
 
         if (fadeAlpha > 0f)
         {
